@@ -2,11 +2,7 @@
 
 # TODO: Do I need/use sources.nix?
 let sources = import ../../nix/sources.nix; in {
-  # I don't know what this does yet, so I'm disabling it for now.
-  #
-  # Home-manager 22.11 requires this be set. We never set it so we have
-  # to use the old state version.
-  # home.stateVersion = "18.09";
+  home.stateVersion = "22.11";
 
   xdg.enable = true;
 
