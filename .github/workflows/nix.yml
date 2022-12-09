@@ -4,14 +4,15 @@ name: Nix
      branches:
        - main
    pull_request:
- jobs:
-   build:
-     runs-on: ubuntu-22.04
-     steps:
-       - uses: actions/checkout@v2
-       - run: nix flake check
-       - run: nix build .#nixosConfigurations.vm-intel
-       - uses: actions/upload-artifact@v2
-         with:
-           name: vmware
-           path: ./result/*.vmdk
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v2
+      - run: nix flake check
+      - run: nix build .#nixosConfigurations.vm-intel
+      - uses: actions/upload-artifact@v2
+        with:
+          name: vmware
+          path: ./result/*.vmdk
