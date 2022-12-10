@@ -20,7 +20,9 @@ jobs:
           authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
       - run: nix flake check
       - run: nix build .#nixosConfigurations.vm-intel.config.system.build.toplevel
-      - uses: actions/upload-artifact@v2
-        with:
-          name: vmware
-          path: ./result/*.vmdk
+      - run: ls -al
+      - run: ls -al result/
+      # - uses: actions/upload-artifact@v2
+      #   with:
+      #     name: vmware
+      #     path: ./result/*.vmdk
