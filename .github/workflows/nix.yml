@@ -15,7 +15,7 @@ jobs:
         with:
           nix_path: nixpkgs=channel:nixos-unstable
       - run: nix flake check
-      - run: nix build .#nixosConfigurations.vm-intel
+      - run: nix build .#nixosConfigurations.vm-intel.config.system.build.toplevel
       - uses: actions/upload-artifact@v2
         with:
           name: vmware
