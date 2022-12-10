@@ -20,11 +20,13 @@ nixpkgs.lib.nixosSystem rec {
     # currently use.
     ../hardware/${name}.nix
     ../machines/${name}.nix
+
     home-manager.nixosModules.home-manager {
       home-manager.useGlobalPkgs = true;
       home-manager.useUserPackages = true;
+      users.users.${user}.isNormalUser = true;
+      users.allowNoPasswordLogin = true;
       home-manager.users.${user} = import ../users/${user}/home-manager.nix;
-      home-manager.users.${user}.isNormalUser = true
     }
 
     # We expose some extra arguments so that our modules can parameterize
