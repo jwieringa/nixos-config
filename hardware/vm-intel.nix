@@ -4,7 +4,7 @@
 { config, lib, pkgs, modulesPath, ... }:
 
 {
-  imports = [ "${modulesPath}/virtualisation/vmware-image.nix" ];
+  imports = [ ];
 
   boot.initrd.availableKernelModules = [
     "ata_piix" "mptspi" "uhci_hcd" "ehci_pci" "sd_mod" "sr_mod" ];

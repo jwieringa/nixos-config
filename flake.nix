@@ -13,9 +13,15 @@
   };
 
   outputs = { self, nixpkgs, home-manager, ... }: {
-		packages.x86_64-linux = {
-			vmwareImage = self.nixosConfigurations.vm-intel.config.system.build.vmwareImage;
-		};
+    # This configuration would produce a vmdx for use in VMware.
+    #
+    # I tried to build a VMware image on Github actions, but they do not yet support
+    # nested virtualization (kvm). I'll need a place in CI to build the VM image to
+    # enable this workflow.
+    #
+    # packages.x86_64-linux = {
+    # 	vmwareImage = self.nixosConfigurations.vm-intel.config.system.build.vmwareImage;
+    # };
 
     nixosConfigurations.vm-intel = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
