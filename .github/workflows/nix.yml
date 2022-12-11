@@ -19,10 +19,4 @@ jobs:
           name: jwieringa-nixos-config
           authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
       - run: nix flake check
-      - run: nix build .#vmwareImage
-      - run: ls -al
-      - run: ls -al result/
-      - uses: actions/upload-artifact@v2
-        with:
-          name: vmware
-          path: ./result/*.vmdk
+      - run: nix build .#nixosConfigurations.vm-intel.config.system.build.toplevel
