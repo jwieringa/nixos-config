@@ -84,6 +84,9 @@
 
   # List services that you want to enable:
 
+  # Start the ssh-agent
+  programs.ssh.startAgent = true;
+
   # Enable the OpenSSH daemon.
   services.openssh.enable = true;
 

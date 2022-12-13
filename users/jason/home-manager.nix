@@ -14,6 +14,10 @@ let sources = import ../../nix/sources.nix; in {
   # per-project flakes sourced with direnv and nix-shell, so this is
   # not a huge list.
   home.packages = [
+    # dependency for fish package
+    # https://github.com/fish-shell/fish-shell/issues/2691
+    pkgs.which
+
     pkgs.bat
     pkgs.fd
     pkgs.fzf
@@ -42,6 +46,53 @@ let sources = import ../../nix/sources.nix; in {
 
   programs.fish = {
     enable = true;
+
+    # TODO: Source these init functions from a file
+    interactiveShellInit = ''
+# Credit: https://github.com/mitchellh/nixos-config/blob/9015bdc23b6b372abcad709c0b0e3c59820c5a54/users/mitchellh/config.fish
+
+#-------------------------------------------------------------------------------
+# SSH Agent
+#-------------------------------------------------------------------------------
+function __ssh_agent_is_started -d "check if ssh agent is already started"
+	if begin; test -f $SSH_ENV; and test -z "$SSH_AGENT_PID"; end
+		source $SSH_ENV > /dev/null
+	end
+
+	if test -z "$SSH_AGENT_PID"
+		return 1
+	end
+
+	ssh-add -l > /dev/null 2>&1
+	if test $status -eq 2
+		return 1
+	end
+end
+
+function __ssh_agent_start -d "start a new ssh agent"
+  ssh-agent -c | sed 's/^echo/#echo/' > $SSH_ENV
+  chmod 600 $SSH_ENV
+  source $SSH_ENV > /dev/null
+  ssh-add
+end
+
+if not test -d $HOME/.ssh
+    mkdir -p $HOME/.ssh
+    chmod 0700 $HOME/.ssh
+end
+
+if test -d $HOME/.gnupg
+    chmod 0700 $HOME/.gnupg
+end
+
+if test -z "$SSH_ENV"
+    set -xg SSH_ENV $HOME/.ssh/environment
+end
+
+if not __ssh_agent_is_started
+    __ssh_agent_start
+end
+    '';
   };
 
   programs.bash = {
