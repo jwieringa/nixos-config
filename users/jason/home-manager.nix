@@ -25,6 +25,9 @@ let sources = import ../../nix/sources.nix; in {
     pkgs.jq
     pkgs.tree
     pkgs.watch
+
+    # Terraform configurations
+    pkgs.tfswitch
   ];
 
   #---------------------------------------------------------------------

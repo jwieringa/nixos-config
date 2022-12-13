@@ -2,9 +2,14 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, ... }:
+{ config, pkgs, ... }: {
+  imports = [
+    ../modules/vmware-guest.nix
+  ];
 
-{
+  # Disable the default module and import our override. We have
+  # customizations to make this work on aarch64.
+  disabledModules = [ "virtualisation/vmware-guest.nix" ];
 
   nix = {
     # use unstable nix so we can access flakes
@@ -21,6 +26,9 @@
       trusted-public-keys = ["jwieringa-nixos-config.cachix.org-1:ZR2Yfx0c9A6EQ+i94lgIOwma7LxVIx4eEMEKu5KrX4w="];
     };
   };
+
+  # Enable vmware guest tools
+  virtualisation.vmware.guest.enable = true;
 
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
