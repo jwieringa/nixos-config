@@ -61,8 +61,12 @@
   users.users.jason = {
     isNormalUser = true;
     home = "/home/jason";
-    extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
+    extraGroups = [ "wheel" ];
+    shell = pkgs.fish;
     hashedPassword = "$y$j9T$DLNE0B4PSDgwgrob9SPbW0$24ZDYOKxCXpQ/6GrkmRAMCj3EQ1OB6c4acRfKAiSR58";
+    openssh.authorizedKeys.keys = [
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBIqztDzifQPfJgEmrfQtE5XNYHOtQne2fiTREkKSC9u jason@radiusnetworks.com"
+    ];
   };
 
   environment.systemPackages = with pkgs; [

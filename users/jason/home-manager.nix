@@ -4,7 +4,7 @@
 let sources = import ../../nix/sources.nix; in {
   home.stateVersion = "22.11";
 
-  xdg.enable = true;
+  # xdg.enable = true;
 
   #---------------------------------------------------------------------
   # Packages
@@ -19,11 +19,8 @@ let sources = import ../../nix/sources.nix; in {
     pkgs.fzf
     pkgs.htop
     pkgs.jq
-    pkgs.ripgrep
     pkgs.tree
     pkgs.watch
-
-    pkgs.go
   ];
 
   #---------------------------------------------------------------------
@@ -34,7 +31,7 @@ let sources = import ../../nix/sources.nix; in {
     LANG = "en_US.UTF-8";
     LC_CTYPE = "en_US.UTF-8";
     LC_ALL = "en_US.UTF-8";
-    EDITOR = "nvim";
+    # EDITOR = "nvim";
     PAGER = "less -FirSwX";
     MANPAGER = "sh -c 'col -bx | ${pkgs.bat}/bin/bat -l man -p'";
   };
@@ -42,6 +39,10 @@ let sources = import ../../nix/sources.nix; in {
   #---------------------------------------------------------------------
   # Programs
   #---------------------------------------------------------------------
+
+  programs.fish = {
+    enable = true;
+  };
 
   programs.bash = {
     enable = true;
@@ -64,9 +65,9 @@ let sources = import ../../nix/sources.nix; in {
     };
   };
 
-  programs.direnv= {
-    enable = true;
-  };
+  #programs.direnv= {
+  #  enable = true;
+  #};
 
   programs.git = {
     enable = true;
@@ -78,7 +79,7 @@ let sources = import ../../nix/sources.nix; in {
     #   signByDefault = true;
     # };
     aliases = {
-	    hist = "log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative # --all";
+      hist = "log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative # --all";
     };
     extraConfig = {
       branch.autosetuprebase = "always";
@@ -91,10 +92,10 @@ let sources = import ../../nix/sources.nix; in {
     };
   };
 
-  programs.go = {
-    enable = true;
-    goPath = "prj/go";
-  };
+  # programs.go = {
+  #   enable = true;
+  #   goPath = "prj/go";
+  # };
 
   programs.vim = {
     enable = true;
