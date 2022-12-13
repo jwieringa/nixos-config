@@ -5,7 +5,22 @@
 { config, pkgs, ... }:
 
 {
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+
+  nix = {
+    # use unstable nix so we can access flakes
+    package = pkgs.nixUnstable;
+    extraOptions = ''
+      experimental-features = nix-command flakes
+    '';
+
+    # public binary cache that I use for all my derivations. You can keep
+    # this, use your own, or toss it. Its typically safe to use a binary cache
+    # since the data inside is checksummed.
+    settings = {
+      substituters = ["https://jwieringa-nixos-config.cachix.org"];
+      trusted-public-keys = ["jwieringa-nixos-config.cachix.org-1:ZR2Yfx0c9A6EQ+i94lgIOwma7LxVIx4eEMEKu5KrX4w="];
+    };
+  };
 
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
