@@ -90,7 +90,18 @@ end
 if not __ssh_agent_is_started
     __ssh_agent_start
 end
+
+#-------------------------------------------------------------------------------
+# nixos
+#-------------------------------------------------------------------------------
+
+set -l nix_shell_info (
+  if test -n "$IN_NIX_SHELL"
+    echo -n "<nix-shell> "
+  end
+)
     '';
+
   };
 
   programs.bash = {
