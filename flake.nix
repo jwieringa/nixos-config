@@ -12,7 +12,7 @@
     };
   };
 
-  outputs = { self, nixpkgs, home-manager, ... }: {
+  outputs = inputs@{ self, nixpkgs, home-manager, ... }: {
     # This configuration would produce a vmdx for use in VMware.
     #
     # I tried to build a VMware image on Github actions, but they do not yet support

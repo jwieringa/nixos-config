@@ -19,4 +19,4 @@ jobs:
           name: jwieringa-nixos-config
           authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
       - run: nix flake check
-      - run: nix build .#nixosConfigurations.vm-aarch64.config.system.build.toplevel
+      - run: nix build .#nixosConfigurations."vm-aarch64".config.system.build.toplevel

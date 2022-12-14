@@ -14,10 +14,7 @@ let sources = import ../../nix/sources.nix; in {
   # per-project flakes sourced with direnv and nix-shell, so this is
   # not a huge list.
   home.packages = [
-    # dependency for fish package
-    # https://github.com/fish-shell/fish-shell/issues/2691
     pkgs.which
-
     pkgs.bat
     pkgs.fd
     pkgs.fzf
@@ -25,8 +22,7 @@ let sources = import ../../nix/sources.nix; in {
     pkgs.jq
     pkgs.tree
     pkgs.watch
-
-    # Terraform configurations
+    pkgs.git
     pkgs.tfswitch
   ];
 
@@ -38,7 +34,7 @@ let sources = import ../../nix/sources.nix; in {
     LANG = "en_US.UTF-8";
     LC_CTYPE = "en_US.UTF-8";
     LC_ALL = "en_US.UTF-8";
-    # EDITOR = "nvim";
+    EDITOR = "vim";
     PAGER = "less -FirSwX";
     MANPAGER = "sh -c 'col -bx | ${pkgs.bat}/bin/bat -l man -p'";
   };
@@ -50,7 +46,6 @@ let sources = import ../../nix/sources.nix; in {
   programs.fish = {
     enable = true;
 
-    # TODO: Source these init functions from a file
     interactiveShellInit = ''
 # Credit: https://github.com/mitchellh/nixos-config/blob/9015bdc23b6b372abcad709c0b0e3c59820c5a54/users/mitchellh/config.fish
 
@@ -58,25 +53,25 @@ let sources = import ../../nix/sources.nix; in {
 # SSH Agent
 #-------------------------------------------------------------------------------
 function __ssh_agent_is_started -d "check if ssh agent is already started"
-	if begin; test -f $SSH_ENV; and test -z "$SSH_AGENT_PID"; end
-		source $SSH_ENV > /dev/null
-	end
-
-	if test -z "$SSH_AGENT_PID"
-		return 1
-	end
-
-	ssh-add -l > /dev/null 2>&1
-	if test $status -eq 2
-		return 1
-	end
+    if begin; test -f $SSH_ENV; and test -z "$SSH_AGENT_PID"; end
+        source $SSH_ENV > /dev/null
+    end
+    
+    if test -z "$SSH_AGENT_PID"
+        return 1
+    end
+    
+    ssh-add -l > /dev/null 2>&1
+        if test $status -eq 2
+        return 1
+    end
 end
 
 function __ssh_agent_start -d "start a new ssh agent"
-  ssh-agent -c | sed 's/^echo/#echo/' > $SSH_ENV
-  chmod 600 $SSH_ENV
-  source $SSH_ENV > /dev/null
-  ssh-add
+    ssh-agent -c | sed 's/^echo/#echo/' > $SSH_ENV
+    chmod 600 $SSH_ENV
+    source $SSH_ENV > /dev/null
+    ssh-add
 end
 
 if not test -d $HOME/.ssh
@@ -119,9 +114,9 @@ end
     };
   };
 
-  #programs.direnv= {
-  #  enable = true;
-  #};
+  programs.direnv= {
+    enable = true;
+  };
 
   programs.git = {
     enable = true;
@@ -146,12 +141,34 @@ end
     };
   };
 
-  # programs.go = {
-  #   enable = true;
-  #   goPath = "prj/go";
-  # };
-
   programs.vim = {
     enable = true;
+    plugins = with pkgs.vimPlugins; [
+      vim-airline
+      vim-terraform
+      vim-nix
+      vim-markdown
+      nerdtree
+      vim-gitgutter
+    ];
+    settings = { ignorecase = true; };
+    extraConfig = ''
+" General Settings
+set nocompatible          " Running Vim, not Vi
+set number                " Always show line numbers
+
+" Status Bar
+set statusline=%t\ %r\ %y\ format:\ %{&ff};\ [%c,%l]  " Format statusbar http://vim.runpaint.org/display/changing-status-line/
+
+" NerdTREE settings
+let NERDTreeShowHidden=1             " Show hidden files
+
+" " Mappings
+let mapleader = ","                  " Set leader key
+map <leader>nt :NERDTree<CR>         " Set NERDTree shortcut
+map <leader>ev :e $MYVIMRC<CR>       " Quickly edit the vimrc file
+map <leader>sv :so $MYVIMRC<CR>      " Quickly reload the vimrc file
+map <leader>cs :noh<cr>
+    '';
   };
 }
