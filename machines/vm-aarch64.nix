@@ -30,6 +30,20 @@
   # Enable vmware guest tools
   virtualisation.vmware.guest.enable = true;
 
+  # Share our host filesystem
+  fileSystems."/host" = {
+    fsType = "fuse./run/current-system/sw/bin/vmhgfs-fuse";
+    device = ".host:/";
+    options = [
+      "umask=22"
+      "uid=1000"
+      "gid=1000"
+      "allow_other"
+      "auto_unmount"
+      "defaults"
+    ];
+  };
+
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
