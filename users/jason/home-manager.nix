@@ -1,10 +1,18 @@
+{ inputs, ... }:
+
 { config, lib, pkgs, ... }:
 
-# TODO: Do I need/use sources.nix?
-let sources = import ../../nix/sources.nix; in {
-  home.stateVersion = "22.11";
+let
+  sources = import ../../nix/sources.nix;
 
-  # xdg.enable = true;
+  # For our MANPAGER env var
+  # https://github.com/sharkdp/bat/issues/1145
+  manpager = (pkgs.writeShellScriptBin "manpager" ''
+    cat "$1" | col -bx | bat --language man --style plain
+  '');
+in {
+  home.stateVersion = "22.11";
+  xdg.enable = true;
 
   #---------------------------------------------------------------------
   # Packages
@@ -14,16 +22,19 @@ let sources = import ../../nix/sources.nix; in {
   # per-project flakes sourced with direnv and nix-shell, so this is
   # not a huge list.
   home.packages = [
-    pkgs.which
+    pkgs._1password-cli
     pkgs.bat
     pkgs.fd
     pkgs.fzf
+    pkgs.git
     pkgs.htop
     pkgs.jq
+    pkgs.ripgrep
+    pkgs.tfswitch
     pkgs.tree
     pkgs.watch
-    pkgs.git
-    pkgs.tfswitch
+    pkgs.which
+    pkgs.firefox
   ];
 
   #---------------------------------------------------------------------
@@ -34,10 +45,13 @@ let sources = import ../../nix/sources.nix; in {
     LANG = "en_US.UTF-8";
     LC_CTYPE = "en_US.UTF-8";
     LC_ALL = "en_US.UTF-8";
-    EDITOR = "vim";
+    EDITOR = "nvim";
     PAGER = "less -FirSwX";
-    MANPAGER = "sh -c 'col -bx | ${pkgs.bat}/bin/bat -l man -p'";
+    MANPAGER = "${manpager}/bin/manpager";
   };
+
+  # TODO - fill out xdf settings
+  # xdg.configFile = {};
 
   #---------------------------------------------------------------------
   # Programs
@@ -45,63 +59,34 @@ let sources = import ../../nix/sources.nix; in {
 
   programs.fish = {
     enable = true;
+    interactiveShellInit = lib.strings.concatStrings (lib.strings.intersperse "\n" ([
+      "source ${sources.theme-bobthefish}/functions/fish_prompt.fish"
+      "source ${sources.theme-bobthefish}/functions/fish_right_prompt.fish"
+      "source ${sources.theme-bobthefish}/functions/fish_title.fish"
+      (builtins.readFile ./config.fish)
+      "set -g SHELL ${pkgs.fish}/bin/fish"
+    ]));
 
-    interactiveShellInit = ''
-# Credit: https://github.com/mitchellh/nixos-config/blob/9015bdc23b6b372abcad709c0b0e3c59820c5a54/users/mitchellh/config.fish
+    shellAliases = {
+      ga = "git add";
+      gc = "git commit";
+      gco = "git checkout";
+      gcp = "git cherry-pick";
+      gdiff = "git diff";
+      gl = "git prettylog";
+      gp = "git push";
+      gs = "git status";
+      gt = "git tag";
+    };
 
-#-------------------------------------------------------------------------------
-# SSH Agent
-#-------------------------------------------------------------------------------
-function __ssh_agent_is_started -d "check if ssh agent is already started"
-    if begin; test -f $SSH_ENV; and test -z "$SSH_AGENT_PID"; end
-        source $SSH_ENV > /dev/null
-    end
-    
-    if test -z "$SSH_AGENT_PID"
-        return 1
-    end
-    
-    ssh-add -l > /dev/null 2>&1
-        if test $status -eq 2
-        return 1
-    end
-end
-
-function __ssh_agent_start -d "start a new ssh agent"
-    ssh-agent -c | sed 's/^echo/#echo/' > $SSH_ENV
-    chmod 600 $SSH_ENV
-    source $SSH_ENV > /dev/null
-    ssh-add
-end
-
-if not test -d $HOME/.ssh
-    mkdir -p $HOME/.ssh
-    chmod 0700 $HOME/.ssh
-end
-
-if test -d $HOME/.gnupg
-    chmod 0700 $HOME/.gnupg
-end
-
-if test -z "$SSH_ENV"
-    set -xg SSH_ENV $HOME/.ssh/environment
-end
-
-if not __ssh_agent_is_started
-    __ssh_agent_start
-end
-
-#-------------------------------------------------------------------------------
-# nixos
-#-------------------------------------------------------------------------------
-
-set -l nix_shell_info (
-  if test -n "$IN_NIX_SHELL"
-    echo -n "<nix-shell> "
-  end
-)
-    '';
-
+    plugins = map (n: {
+      name = n;
+      src  = sources.${n};
+    }) [
+      "fish-fzf"
+      "fish-foreign-env"
+      "theme-bobthefish"
+    ];
   };
 
   programs.bash = {
@@ -119,9 +104,6 @@ set -l nix_shell_info (
       gp = "git push";
       gs = "git status";
       gt = "git tag";
-
-      pbcopy = "xclip";
-      pbpaste = "xclip -o";
     };
   };
 
@@ -133,11 +115,6 @@ set -l nix_shell_info (
     enable = true;
     userName = "Jason Wieringa";
     userEmail = "jason@wieringa.io";
-    # TODO: Add signing key
-    # signing = {
-    #   key = "";
-    #   signByDefault = true;
-    # };
     aliases = {
       hist = "log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(r) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative";
     };
@@ -152,34 +129,48 @@ set -l nix_shell_info (
     };
   };
 
-  programs.vim = {
+  programs.neovim = {
     enable = true;
-    plugins = with pkgs.vimPlugins; [
-      vim-airline
-      vim-terraform
-      vim-nix
-      vim-markdown
-      nerdtree
-      vim-gitgutter
+    package = inputs.neovim-nightly-overlay.packages.${pkgs.system}.default;
+
+    withPython3 = true;
+
+    plugins = with pkgs; [
+      # Copied plugins - curious but needs review
+      customVim.vim-copilot
+      customVim.vim-cue
+      customVim.vim-glsl
+      customVim.vim-misc
+      customVim.vim-tla
+      customVim.vim-zig
+      customVim.pigeon
+      customVim.AfterColors
+
+      customVim.vim-nord
+      customVim.nvim-comment
+      customVim.nvim-conform
+      customVim.nvim-dressing
+      customVim.nvim-gitsigns
+      customVim.nvim-lualine
+      customVim.nvim-lspconfig
+      customVim.nvim-nui
+      customVim.nvim-plenary # required for telescope
+      customVim.nvim-telescope
+
+      customVim.vim-pgsql
+      customVim.vim-fish
+
+      customVim.nvim-treesitter
+      customVim.nvim-treesitter-playground
+      customVim.nvim-treesitter-textobjects
+
+      vimPlugins.nvim-treesitter-parsers.elixir
+      vimPlugins.vim-markdown
+      vimPlugins.vim-nix
+      vimPlugins.vim-eunuch
+      vimPlugins.typescript-vim
     ];
-    settings = { ignorecase = true; };
-    extraConfig = ''
-" General Settings
-set nocompatible          " Running Vim, not Vi
-set number                " Always show line numbers
 
-" Status Bar
-set statusline=%t\ %r\ %y\ format:\ %{&ff};\ [%c,%l]  " Format statusbar http://vim.runpaint.org/display/changing-status-line/
-
-" NerdTREE settings
-let NERDTreeShowHidden=1             " Show hidden files
-
-" " Mappings
-let mapleader = ","                  " Set leader key
-map <leader>nt :NERDTree<CR>         " Set NERDTree shortcut
-map <leader>ev :e $MYVIMRC<CR>       " Quickly edit the vimrc file
-map <leader>sv :so $MYVIMRC<CR>      " Quickly reload the vimrc file
-map <leader>cs :noh<cr>
-    '';
-  };
+    extraConfig = (import ./vim-config.nix) { inherit sources; };
+  }; 
 }

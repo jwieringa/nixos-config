@@ -1,39 +1,57 @@
-# Credit: https://github.com/mitchellh/nixos-config/blob/501f9aa0a669479c34d8d036f52a15b04002d259/flake.nix
+# Credit: https://github.com/mitchellh/nixos-config/blob/06b6eb4aa6f9817605f4d45a33331f4263e02d58/flake.nix
 
 {
   description = "Jason Wieringa's NixOS";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/release-22.11";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-24.11";
 
-    home-manager = {
-      url = "github:nix-community/home-manager/release-22.11";
+    neovim-nightly-overlay = {
+      url = "github:nix-community/neovim-nightly-overlay";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    home-manager = {
+      url = "github:nix-community/home-manager/release-24.11";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    # Other packages
+    zig.url = "github:mitchellh/zig-overlay";
   };
 
-  outputs = inputs@{ self, nixpkgs, home-manager, ... }: {
-    # This configuration would produce a vmdx for use in VMware.
-    #
-    # I tried to build a VMware image on Github actions, but they do not yet support
-    # nested virtualization (kvm). I'll need a place in CI to build the VM image to
-    # enable this workflow.
-    #
-    # packages.x86_64-linux = {
-    # 	vmwareImage = self.nixosConfigurations.vm-intel.config.system.build.vmwareImage;
-    # };
+  outputs = { self, nixpkgs, home-manager, ... }@inputs: let
+    overlays = [
+      inputs.zig.overlays.default
 
-    nixosConfigurations.vm-aarch64 = nixpkgs.lib.nixosSystem {
+      (final: prev: {
+        # gh CLI on stable has bugs.
+        gh = inputs.nixpkgs-unstable.legacyPackages.${prev.system}.gh;
+      })
+    ];
+
+    mkSystem = import ./lib/mksystem.nix {
+      inherit overlays nixpkgs inputs;
+    };
+  in {
+    nixosConfigurations.vm-aarch64 = mkSystem "vm-aarch64" {
       system = "aarch64-linux";
-      modules = [
-        ./hardware/vm-aarch64.nix
-        ./machines/vm-aarch64.nix
-        home-manager.nixosModules.home-manager {
-          home-manager.users.jason = import ./users/jason/home-manager.nix;
-          home-manager.useGlobalPkgs = true;
-          home-manager.useUserPackages = true;
-        }
-      ];
+      user   = "jason";
     };
   };
 }
+
+#     nixosConfigurations.vm-aarch64 = nixpkgs.lib.nixosSystem {
+#       system = "aarch64-linux";
+#       modules = [
+#         ./hardware/vm-aarch64.nix
+#         ./machines/vm-aarch64.nix
+#         home-manager.nixosModules.home-manager {
+#           home-manager.users.jason = import ./users/jason/home-manager.nix;
+#           home-manager.useGlobalPkgs = true;
+#           home-manager.useUserPackages = true;
+#         }
+#       ];
+#     };
+#   };
+# }
