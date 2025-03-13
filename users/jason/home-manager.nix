@@ -12,6 +12,7 @@ let
   '');
 in {
   home.stateVersion = "22.11";
+
   xdg.enable = true;
 
   #---------------------------------------------------------------------
@@ -25,7 +26,9 @@ in {
     pkgs._1password-cli
     pkgs.bat
     pkgs.fd
+    pkgs.firefox
     pkgs.fzf
+    pkgs.ghostty
     pkgs.git
     pkgs.htop
     pkgs.jq
@@ -34,7 +37,6 @@ in {
     pkgs.tree
     pkgs.watch
     pkgs.which
-    pkgs.firefox
   ];
 
   #---------------------------------------------------------------------
@@ -50,8 +52,19 @@ in {
     MANPAGER = "${manpager}/bin/manpager";
   };
 
-  # TODO - fill out xdf settings
-  # xdg.configFile = {};
+  xdg.configFile = {
+    # tree-sitter parsers
+    "nvim/parser/proto.so".source = "${pkgs.tree-sitter-proto}/parser";
+    "nvim/queries/proto/folds.scm".source =
+      "${sources.tree-sitter-proto}/queries/folds.scm";
+    "nvim/queries/proto/highlights.scm".source =
+      "${sources.tree-sitter-proto}/queries/highlights.scm";
+    "nvim/queries/proto/textobjects.scm".source =
+      ./textobjects.scm;
+
+    # config files
+    # TODO: integrate dotfiles
+  };
 
   #---------------------------------------------------------------------
   # Programs
@@ -116,7 +129,9 @@ in {
     userName = "Jason Wieringa";
     userEmail = "jason@wieringa.io";
     aliases = {
+      clean = "!git branch --merged | grep -v "\*" | grep -v "main" | xargs -n 1 -r git branch -d"
       hist = "log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(r) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative";
+      root = "rev-parse --show-toplevel";
     };
     extraConfig = {
       branch.autosetuprebase = "always";
@@ -128,6 +143,11 @@ in {
       init.defaultBranch = "main";
     };
   };
+
+  programs.go = {
+    enable = true;
+    goPath = "code/go";
+  }
 
   programs.neovim = {
     enable = true;
@@ -173,4 +193,13 @@ in {
 
     extraConfig = (import ./vim-config.nix) { inherit sources; };
   }; 
+
+  services.gpg-agent = {
+    enable = true;
+    pinentryPackage = pkgs.pinentry-tty;
+
+    # cache the keys forever so we don't get asked for a password
+    defaultCacheTtl = 31536000;
+    maxCacheTtl = 31536000;
+  };
 }
