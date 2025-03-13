@@ -52,33 +52,22 @@ in {
     MANPAGER = "${manpager}/bin/manpager";
   };
 
-  xdg.configFile = {
-    # tree-sitter parsers
-    "nvim/parser/proto.so".source = "${pkgs.tree-sitter-proto}/parser";
-    "nvim/queries/proto/folds.scm".source =
-      "${sources.tree-sitter-proto}/queries/folds.scm";
-    "nvim/queries/proto/highlights.scm".source =
-      "${sources.tree-sitter-proto}/queries/highlights.scm";
-    "nvim/queries/proto/textobjects.scm".source =
-      ./textobjects.scm;
+  # # xdg.configFile = {
+  # # };
 
-    # config files
-    # TODO: integrate dotfiles
-  };
-
-  #---------------------------------------------------------------------
-  # Programs
-  #---------------------------------------------------------------------
+  # #---------------------------------------------------------------------
+  # # Programs
+  # #---------------------------------------------------------------------
 
   programs.fish = {
     enable = true;
-    interactiveShellInit = lib.strings.concatStrings (lib.strings.intersperse "\n" ([
-      "source ${sources.theme-bobthefish}/functions/fish_prompt.fish"
-      "source ${sources.theme-bobthefish}/functions/fish_right_prompt.fish"
-      "source ${sources.theme-bobthefish}/functions/fish_title.fish"
-      (builtins.readFile ./config.fish)
-      "set -g SHELL ${pkgs.fish}/bin/fish"
-    ]));
+    # interactiveShellInit = lib.strings.concatStrings (lib.strings.intersperse "\n" ([
+    #   "source ${sources.theme-bobthefish}/functions/fish_prompt.fish"
+    #   "source ${sources.theme-bobthefish}/functions/fish_right_prompt.fish"
+    #   "source ${sources.theme-bobthefish}/functions/fish_title.fish"
+    #   (builtins.readFile ./config.fish)
+    #   "set -g SHELL ${pkgs.fish}/bin/fish"
+    # ]));
 
     shellAliases = {
       ga = "git add";
@@ -92,47 +81,47 @@ in {
       gt = "git tag";
     };
 
-    plugins = map (n: {
-      name = n;
-      src  = sources.${n};
-    }) [
-      "fish-fzf"
-      "fish-foreign-env"
-      "theme-bobthefish"
-    ];
+  #   plugins = map (n: {
+  #     name = n;
+  #     src  = sources.${n};
+  #   }) [
+  #     "fish-fzf"
+  #     "fish-foreign-env"
+  #     "theme-bobthefish"
+  #   ];
   };
 
-  programs.bash = {
-    enable = true;
-    shellOptions = [];
-    historyControl = [ "ignoredups" "ignorespace" ];
+  # programs.bash = {
+  #   enable = true;
+  #   shellOptions = [];
+  #   historyControl = [ "ignoredups" "ignorespace" ];
 
-    shellAliases = {
-      ga = "git add";
-      gc = "git commit";
-      gco = "git checkout";
-      gcp = "git cherry-pick";
-      gdiff = "git diff";
-      gl = "git prettylog";
-      gp = "git push";
-      gs = "git status";
-      gt = "git tag";
-    };
-  };
+  #   shellAliases = {
+  #     ga = "git add";
+  #     gc = "git commit";
+  #     gco = "git checkout";
+  #     gcp = "git cherry-pick";
+  #     gdiff = "git diff";
+  #     gl = "git prettylog";
+  #     gp = "git push";
+  #     gs = "git status";
+  #     gt = "git tag";
+  #   };
+  # };
 
-  programs.direnv= {
-    enable = true;
-  };
+  # programs.direnv= {
+  #   enable = true;
+  # };
 
   programs.git = {
     enable = true;
     userName = "Jason Wieringa";
     userEmail = "jason@wieringa.io";
-    aliases = {
-      clean = "!git branch --merged | grep -v "\*" | grep -v "main" | xargs -n 1 -r git branch -d"
-      hist = "log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(r) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative";
-      root = "rev-parse --show-toplevel";
-    };
+    # aliases = {
+    #   clean = "!git branch --merged | grep  -v '\\*\\|main' | xargs -n 1 -r git branch -d";
+    #   hist = "log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(r) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative";
+    #   root = "rev-parse --show-toplevel";
+    # };
     extraConfig = {
       branch.autosetuprebase = "always";
       color.ui = true;
@@ -144,62 +133,62 @@ in {
     };
   };
 
-  programs.go = {
-    enable = true;
-    goPath = "code/go";
-  }
+  # programs.go = {
+  #   enable = true;
+  #   goPath = "code/go";
+  # };
 
-  programs.neovim = {
-    enable = true;
-    package = inputs.neovim-nightly-overlay.packages.${pkgs.system}.default;
+  # # programs.neovim = {
+  # #   enable = true;
+  # #   package = inputs.neovim-nightly-overlay.packages.${pkgs.system}.default;
 
-    withPython3 = true;
+  # #   withPython3 = true;
 
-    plugins = with pkgs; [
-      # Copied plugins - curious but needs review
-      customVim.vim-copilot
-      customVim.vim-cue
-      customVim.vim-glsl
-      customVim.vim-misc
-      customVim.vim-tla
-      customVim.vim-zig
-      customVim.pigeon
-      customVim.AfterColors
+  # #   plugins = with pkgs; [
+  # #     # Copied plugins - curious but needs review
+  # #     customVim.vim-copilot
+  # #     customVim.vim-cue
+  # #     customVim.vim-glsl
+  # #     customVim.vim-misc
+  # #     customVim.vim-tla
+  # #     customVim.vim-zig
+  # #     customVim.pigeon
+  # #     customVim.AfterColors
 
-      customVim.vim-nord
-      customVim.nvim-comment
-      customVim.nvim-conform
-      customVim.nvim-dressing
-      customVim.nvim-gitsigns
-      customVim.nvim-lualine
-      customVim.nvim-lspconfig
-      customVim.nvim-nui
-      customVim.nvim-plenary # required for telescope
-      customVim.nvim-telescope
+  # #     customVim.vim-nord
+  # #     customVim.nvim-comment
+  # #     customVim.nvim-conform
+  # #     customVim.nvim-dressing
+  # #     customVim.nvim-gitsigns
+  # #     customVim.nvim-lualine
+  # #     customVim.nvim-lspconfig
+  # #     customVim.nvim-nui
+  # #     customVim.nvim-plenary # required for telescope
+  # #     customVim.nvim-telescope
 
-      customVim.vim-pgsql
-      customVim.vim-fish
+  # #     customVim.vim-pgsql
+  # #     customVim.vim-fish
 
-      customVim.nvim-treesitter
-      customVim.nvim-treesitter-playground
-      customVim.nvim-treesitter-textobjects
+  # #     customVim.nvim-treesitter
+  # #     customVim.nvim-treesitter-playground
+  # #     customVim.nvim-treesitter-textobjects
 
-      vimPlugins.nvim-treesitter-parsers.elixir
-      vimPlugins.vim-markdown
-      vimPlugins.vim-nix
-      vimPlugins.vim-eunuch
-      vimPlugins.typescript-vim
-    ];
+  # #     vimPlugins.nvim-treesitter-parsers.elixir
+  # #     vimPlugins.vim-markdown
+  # #     vimPlugins.vim-nix
+  # #     vimPlugins.vim-eunuch
+  # #     vimPlugins.typescript-vim
+  # #   ];
 
-    extraConfig = (import ./vim-config.nix) { inherit sources; };
-  }; 
+  # #   extraConfig = (import ./vim-config.nix) { inherit sources; };
+  # # }; 
 
-  services.gpg-agent = {
-    enable = true;
-    pinentryPackage = pkgs.pinentry-tty;
+  # services.gpg-agent = {
+  #   enable = true;
+  #   pinentryPackage = pkgs.pinentry-tty;
 
-    # cache the keys forever so we don't get asked for a password
-    defaultCacheTtl = 31536000;
-    maxCacheTtl = 31536000;
-  };
+  #   # cache the keys forever so we don't get asked for a password
+  #   defaultCacheTtl = 31536000;
+  #   maxCacheTtl = 31536000;
+  # };
 }
