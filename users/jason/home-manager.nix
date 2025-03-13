@@ -59,13 +59,13 @@ in {
 
   programs.fish = {
     enable = true;
-    # interactiveShellInit = lib.strings.concatStrings (lib.strings.intersperse "\n" ([
-    #   "source ${sources.theme-bobthefish}/functions/fish_prompt.fish"
-    #   "source ${sources.theme-bobthefish}/functions/fish_right_prompt.fish"
-    #   "source ${sources.theme-bobthefish}/functions/fish_title.fish"
-    #   (builtins.readFile ./config.fish)
-    #   "set -g SHELL ${pkgs.fish}/bin/fish"
-    # ]));
+    interactiveShellInit = lib.strings.concatStrings (lib.strings.intersperse "\n" ([
+      "source ${sources.theme-bobthefish}/functions/fish_prompt.fish"
+      "source ${sources.theme-bobthefish}/functions/fish_right_prompt.fish"
+      "source ${sources.theme-bobthefish}/functions/fish_title.fish"
+      (builtins.readFile ./config.fish)
+      "set -g SHELL ${pkgs.fish}/bin/fish"
+    ]));
 
     shellAliases = {
       ga = "git add";
@@ -119,10 +119,10 @@ in {
     };
   };
 
-  # programs.go = {
-  #   enable = true;
-  #   goPath = "code/go";
-  # };
+  programs.go = {
+    enable = true;
+    goPath = "code/go";
+  };
 
   programs.neovim = {
     enable = true;
@@ -132,49 +132,49 @@ in {
 
     plugins = with pkgs; [
       # Copied plugins - curious but needs review
-      # customVim.vim-copilot
-      # customVim.vim-cue
-      # customVim.vim-glsl
-      # customVim.vim-misc
-      # customVim.vim-tla
-      # customVim.vim-zig
-      # customVim.pigeon
-      # customVim.AfterColors
+      customVim.vim-copilot
+      customVim.vim-cue
+      customVim.vim-glsl
+      customVim.vim-misc
+      customVim.vim-tla
+      customVim.vim-zig
+      customVim.pigeon
+      customVim.AfterColors
 
-      # customVim.vim-nord
-      # customVim.nvim-comment
-      # customVim.nvim-conform
-      # customVim.nvim-dressing
-      # customVim.nvim-gitsigns
-      # customVim.nvim-lualine
-      # customVim.nvim-lspconfig
-      # customVim.nvim-nui
-      # customVim.nvim-plenary # required for telescope
-      # customVim.nvim-telescope
+      customVim.vim-nord
+      customVim.nvim-comment
+      customVim.nvim-conform
+      customVim.nvim-dressing
+      customVim.nvim-gitsigns
+      customVim.nvim-lualine
+      customVim.nvim-lspconfig
+      customVim.nvim-nui
+      customVim.nvim-plenary # required for telescope
+      customVim.nvim-telescope
 
-      # customVim.vim-pgsql
-      # customVim.vim-fish
+      customVim.vim-pgsql
+      customVim.vim-fish
 
-      # # customVim.nvim-treesitter
-      # # customVim.nvim-treesitter-playground
-      # # customVim.nvim-treesitter-textobjects
+      customVim.nvim-treesitter
+      customVim.nvim-treesitter-playground
+      customVim.nvim-treesitter-textobjects
 
-      # # vimPlugins.nvim-treesitter-parsers.elixir
-      # vimPlugins.vim-markdown
-      # vimPlugins.vim-nix
-      # vimPlugins.vim-eunuch
-      # vimPlugins.typescript-vim
+      vimPlugins.nvim-treesitter-parsers.elixir
+      vimPlugins.vim-markdown
+      vimPlugins.vim-nix
+      vimPlugins.vim-eunuch
+      vimPlugins.typescript-vim
     ];
 
-    # extraConfig = (import ./vim-config.nix) { inherit sources; };
+    extraConfig = (import ./vim-config.nix) { inherit sources; };
   }; 
 
-  # services.gpg-agent = {
-  #   enable = true;
-  #   pinentryPackage = pkgs.pinentry-tty;
+  services.gpg-agent = {
+    enable = true;
+    pinentryPackage = pkgs.pinentry-tty;
 
-  #   # cache the keys forever so we don't get asked for a password
-  #   defaultCacheTtl = 31536000;
-  #   maxCacheTtl = 31536000;
-  # };
+    # cache the keys forever so we don't get asked for a password
+    defaultCacheTtl = 31536000;
+    maxCacheTtl = 31536000;
+  };
 }
