@@ -12,8 +12,7 @@
   flake-utils.lib.eachDefaultSystem (system:
   let
     pkgs = nixpkgs.legacyPackages.${system};
-    cwd = builtins.getEnv "PWD";
-    rubyVersion = nixpkgs.lib.strings.trim (builtins.readFile "${cwd}/.ruby-version");
+    rubyVersion = "3.1.4";
     ruby = nixpkgs-ruby.packages.${system}."ruby-${rubyVersion}";
   in
   {
