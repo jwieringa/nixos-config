@@ -40,18 +40,3 @@
     };
   };
 }
-
-#     nixosConfigurations.vm-aarch64 = nixpkgs.lib.nixosSystem {
-#       system = "aarch64-linux";
-#       modules = [
-#         ./hardware/vm-aarch64.nix
-#         ./machines/vm-aarch64.nix
-#         home-manager.nixosModules.home-manager {
-#           home-manager.users.jason = import ./users/jason/home-manager.nix;
-#           home-manager.useGlobalPkgs = true;
-#           home-manager.useUserPackages = true;
-#         }
-#       ];
-#     };
-#   };
-# }
