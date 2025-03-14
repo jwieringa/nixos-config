@@ -1,4 +1,4 @@
-{ config, pkgs, lib, currentSystem, currentSystemName,... }:
+{ config, pkgs, lib, currentSystem, currentSystemName, ... }:
 
 let
   # The desktop environment we want. Set to one of:
@@ -27,8 +27,12 @@ in {
     # this, use your own, or toss it. Its typically safe to use a binary cache
     # since the data inside is checksummed.
     settings = {
-      substituters = ["https://jwieringa-nixos-config.cachix.org"];
-      trusted-public-keys = ["jwieringa-nixos-config.cachix.org-1:ZR2Yfx0c9A6EQ+i94lgIOwma7LxVIx4eEMEKu5KrX4w="];
+      substituters = [
+        "https://jwieringa-nixos-config.cachix.org"
+      ];
+      trusted-public-keys = [
+        "jwieringa-nixos-config.cachix.org-1:ZR2Yfx0c9A6EQ+i94lgIOwma7LxVIx4eEMEKu5KrX4w="
+      ];
     };
   };
 
@@ -92,6 +96,18 @@ in {
   #     pkgs.jetbrains-mono
   #   ];
   # };
+
+  # Enable the unfree 1Password packages
+  nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
+    "1password-gui"
+    "1password"
+  ];
+
+  programs._1password.enable = true;
+  programs._1password-gui = {
+    enable = true;
+    polkitPolicyOwners = [ "jason" ];
+  };
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget

@@ -1,7 +1,6 @@
 # This function creates a NixOS system based on our VM setup for a
 # particular architecture.
 { nixpkgs, overlays, inputs }:
-
 name:
 {
   system,
@@ -13,9 +12,7 @@ let
   machineConfig = ../machines/${name}.nix;
   userOSConfig = ../users/${user}/nixos.nix;
   userHMConfig = ../users/${user}/home-manager.nix;
-
   systemFunc = nixpkgs.lib.nixosSystem;
-  home-manager = inputs.home-manager.nixosModules;
 in systemFunc rec {
   inherit system;
 
@@ -28,13 +25,26 @@ in systemFunc rec {
     # Allow unfree packages.
     { nixpkgs.config.allowUnfree = true; }
 
+    # Set min stateVersion
+    {
+      system.stateVersion = "24.11";
+    }
+
+    # Apply machine configurations
     machineConfig
+    # Apply OS level user configurations
     userOSConfig
-    home-manager.home-manager {
-      home-manager.useGlobalPkgs = true;
-      home-manager.useUserPackages = true;
-      home-manager.users.${user} = import userHMConfig {
-        inputs = inputs;
+
+
+    # Setup home manager
+    inputs.home-manager.nixosModules.home-manager
+    {
+      home-manager = {
+        useGlobalPkgs = true;
+        useUserPackages = true;
+        users.${user} = import userHMConfig {
+          inputs = inputs;
+        };
       };
     }
 

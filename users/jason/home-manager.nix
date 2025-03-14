@@ -11,9 +11,9 @@ let
     cat "$1" | col -bx | bat --language man --style plain
   '');
 in {
-  home.stateVersion = "22.11";
-
   xdg.enable = true;
+
+  home.stateVersion = "24.11";
 
   #---------------------------------------------------------------------
   # Packages
@@ -21,7 +21,6 @@ in {
 
   # Packages installed in the OS available to all projects
   home.packages = [
-    pkgs._1password-cli
     pkgs.bat
     pkgs.fd
     pkgs.firefox
@@ -50,12 +49,12 @@ in {
     MANPAGER = "${manpager}/bin/manpager";
   };
 
-  # # xdg.configFile = {
-  # # };
+  xdg.configFile = {
+  };
 
-  # #---------------------------------------------------------------------
-  # # Programs
-  # #---------------------------------------------------------------------
+  #---------------------------------------------------------------------
+  # Programs
+  #---------------------------------------------------------------------
 
   programs.fish = {
     enable = true;
@@ -63,7 +62,7 @@ in {
       "source ${sources.theme-bobthefish}/functions/fish_prompt.fish"
       "source ${sources.theme-bobthefish}/functions/fish_right_prompt.fish"
       "source ${sources.theme-bobthefish}/functions/fish_title.fish"
-      (builtins.readFile ./config.fish)
+      # (builtins.readFile ./config.fish)
       "set -g SHELL ${pkgs.fish}/bin/fish"
     ]));
 
@@ -126,7 +125,7 @@ in {
 
   programs.neovim = {
     enable = true;
-    package = inputs.neovim-nightly-overlay.packages.${pkgs.system}.default;
+    vimAlias = true;
 
     withPython3 = true;
 
@@ -135,7 +134,6 @@ in {
       customVim.vim-copilot
       customVim.vim-cue
       customVim.vim-glsl
-      customVim.vim-misc
       customVim.vim-tla
       customVim.vim-zig
       customVim.pigeon
@@ -144,11 +142,9 @@ in {
       customVim.vim-nord
       customVim.nvim-comment
       customVim.nvim-conform
-      customVim.nvim-dressing
       customVim.nvim-gitsigns
       customVim.nvim-lualine
       customVim.nvim-lspconfig
-      customVim.nvim-nui
       customVim.nvim-plenary # required for telescope
       customVim.nvim-telescope
 

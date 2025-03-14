@@ -25,11 +25,6 @@ let sources = import ../../nix/sources.nix; in rec {
       src = sources.vim-glsl;
     };
 
-    vim-misc = vimUtils.buildVimPlugin {
-      name = "vim-misc";
-      src = inputs.vim-misc;
-    };
-
     vim-pgsql = vimUtils.buildVimPlugin {
       name = "vim-pgsql";
       src = sources.vim-pgsql;
@@ -81,11 +76,6 @@ let sources = import ../../nix/sources.nix; in rec {
       src = inputs.nvim-conform;
     };
 
-    nvim-dressing = vimUtils.buildVimPlugin {
-      name = "nvim-dressing";
-      src = inputs.nvim-dressing;
-    };
-
     nvim-gitsigns = vimUtils.buildVimPlugin {
       name = "nvim-gitsigns";
       src = inputs.nvim-gitsigns;
@@ -94,11 +84,6 @@ let sources = import ../../nix/sources.nix; in rec {
     nvim-lualine = vimUtils.buildVimPlugin {
       name = "nvim-lualine";
       src = inputs.nvim-lualine;
-    };
-
-    nvim-nui = vimUtils.buildVimPlugin {
-      name = "nvim-nui";
-      src = inputs.nvim-nui;
     };
 
     nvim-plenary = vimUtils.buildVimPlugin {
