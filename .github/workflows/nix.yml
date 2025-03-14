@@ -19,4 +19,4 @@ jobs:
           name: jwieringa-nixos-config
           authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
       - run: nix flake check
-      - run: NIXPKGS_ALLOW_UNSUPPORTED_SYSTEM=1 nixos-rebuild switch --flake "/nix-config#vm-aarch64"
+      - run: nixos-rebuild switch --flake .#vm-aarch64
