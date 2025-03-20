@@ -14,7 +14,7 @@
 
         claudeCode = pkgs.buildNpmPackage {
           pname = "claude-code";
-          version = "0.2.45";
+          version = "0.2.50";
           src = ./.;
           npmDepsHash = "sha256-+zq83EgOYu1NdOFSahdLnWnvzvOSsmoyYv7Hgf9sAg4=";
           
