@@ -113,6 +113,7 @@ in {
   # $ nix search wget
   environment.systemPackages = with pkgs; [
     cachix
+    claude-code
     gnumake
     killall
     niv

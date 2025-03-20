@@ -14,6 +14,9 @@
 
     # Other packages
     zig.url = "github:mitchellh/zig-overlay";
+    
+    # Local flakes
+    claude-code.url = "path:./flakes/claude-code";
 
     # Non-flakes
     vim-copilot.url = "github:github/copilot.vim/v1.41.0";
@@ -41,6 +44,8 @@
       (final: prev: {
         # gh CLI on stable has bugs.
         gh = inputs.nixpkgs-unstable.legacyPackages.${prev.system}.gh;
+        # Add claude-code globally
+        claude-code = inputs.claude-code.packages.${prev.system}.default;
       })
     ];
 
