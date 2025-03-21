@@ -129,40 +129,12 @@ in {
 
     withPython3 = true;
 
-    plugins = with pkgs; [
-      # Copied plugins - curious but needs review
-      customVim.vim-copilot
-      customVim.vim-cue
-      customVim.vim-glsl
-      customVim.vim-tla
-      customVim.vim-zig
-      customVim.pigeon
-      customVim.AfterColors
-
-      customVim.vim-nord
-      customVim.nvim-comment
-      customVim.nvim-conform
-      customVim.nvim-gitsigns
-      customVim.nvim-lualine
-      customVim.nvim-lspconfig
-      customVim.nvim-plenary # required for telescope
-      customVim.nvim-telescope
-
-      customVim.vim-pgsql
-      customVim.vim-fish
-
-      customVim.nvim-treesitter
-      customVim.nvim-treesitter-playground
-      customVim.nvim-treesitter-textobjects
-
-      vimPlugins.nvim-treesitter-parsers.elixir
-      vimPlugins.vim-markdown
-      vimPlugins.vim-nix
-      vimPlugins.vim-eunuch
-      vimPlugins.typescript-vim
+    plugins = with pkgs.vimPlugins; [
+      nvim-lspconfig
+      nvim-treesitter
     ];
 
-    extraConfig = (import ./vim-config.nix) { inherit sources; };
+    # extraConfig = (import ./vim-config.nix) { inherit sources; };
   }; 
 
   services.gpg-agent = {

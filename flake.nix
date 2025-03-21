@@ -17,24 +17,6 @@
     
     # Local flakes
     claude-code.url = "path:./flakes/claude-code";
-
-    # Non-flakes
-    vim-copilot.url = "github:github/copilot.vim/v1.41.0";
-    vim-copilot.flake = false;
-    nvim-conform.url = "github:stevearc/conform.nvim/v7.1.0";
-    nvim-conform.flake = false;
-    nvim-gitsigns.url = "github:lewis6991/gitsigns.nvim/v0.9.0";
-    nvim-gitsigns.flake = false;
-    nvim-lualine.url ="github:nvim-lualine/lualine.nvim";
-    nvim-lualine.flake = false;
-    nvim-lspconfig.url = "github:neovim/nvim-lspconfig";
-    nvim-lspconfig.flake = false;
-    nvim-plenary.url = "github:nvim-lua/plenary.nvim";
-    nvim-plenary.flake = false;
-    nvim-telescope.url = "github:nvim-telescope/telescope.nvim/0.1.8";
-    nvim-telescope.flake = false;
-    nvim-treesitter.url = "github:nvim-treesitter/nvim-treesitter/v0.9.3";
-    nvim-treesitter.flake = false;
   };
 
   outputs = { self, nixpkgs, home-manager, ... }@inputs: let

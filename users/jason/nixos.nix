@@ -20,8 +20,4 @@
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBIqztDzifQPfJgEmrfQtE5XNYHOtQne2fiTREkKSC9u jason"
     ];
   };
-
-  nixpkgs.overlays = import ../../lib/overlays.nix ++ [
-    (import ./vim.nix { inherit inputs; })
-  ];
 }
