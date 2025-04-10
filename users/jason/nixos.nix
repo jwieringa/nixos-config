@@ -6,6 +6,18 @@
 
   # Add ~/.local/bin to PATH
   environment.localBinInPath = true;
+  
+  # Create terraform directory with permissions for jason
+  system.activationScripts.terraformDir = ''
+    mkdir -p /opt/terraform/
+  '';
+ 
+  # Make /opt directory manageable by jason
+  system.activationScripts.optDirPermissions = ''
+    mkdir -p /opt
+    chmod 755 /opt
+    chown jason:users /opt
+  '';
 
   # Since we're using fish as our shell
   programs.fish.enable = true;

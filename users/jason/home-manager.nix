@@ -122,6 +122,13 @@ in {
     enable = true;
     goPath = "code/go";
   };
+  
+  # Add tfswitch configuration file
+  home.file.".tfswitch.toml".text = ''
+    bin = "/opt/terraform/bin"
+    install = "/opt/terraform"
+    product = "terraform"
+  '';
 
   programs.neovim = {
     enable = true;
