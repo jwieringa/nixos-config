@@ -14,9 +14,9 @@
 
         claudeCode = pkgs.buildNpmPackage {
           pname = "claude-code";
-          version = "0.2.50";
+          version = "1.0.2";
           src = ./.;
-          npmDepsHash = "sha256-+zq83EgOYu1NdOFSahdLnWnvzvOSsmoyYv7Hgf9sAg4=";
+          npmDepsHash = "sha256-1w47oBYPikROO9+LbUMjW8I/eCS6hDfl9ifhmSOsWUw=";
           
           # Disable npm build since there's no build script
           dontNpmBuild = true;
