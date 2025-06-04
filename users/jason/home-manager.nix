@@ -107,10 +107,12 @@ in {
       hist = "log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(r) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative";
       root = "rev-parse --show-toplevel";
     };
+    ignores = [];
     extraConfig = {
       branch.autosetuprebase = "always";
       color.ui = true;
       core.askPass = ""; # needs to be empty to use terminal for ask pass
+      core.excludesFile = "~/.gitignore_global";
       credential.helper = "store"; # want to make this more secure
       github.user = "jwieringa";
       push.default = "tracking";
@@ -125,8 +127,8 @@ in {
   
   # Add tfswitch configuration file
   home.file.".tfswitch.toml".text = ''
-    bin = "/opt/terraform/bin"
-    install = "/opt/terraform"
+    bin = "/opt/terraform/bin/terraform"
+    install = "/opt/terraform/versions"
     product = "terraform"
   '';
 

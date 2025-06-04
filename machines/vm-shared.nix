@@ -39,6 +39,7 @@ in {
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
+  boot.loader.systemd-boot.configurationLimit = 3;  # Keep only 3 latest generations
 
   # VMware, Parallels both only support this being 0 otherwise you see
   # "error switching console mode" on boot.

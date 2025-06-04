@@ -16,7 +16,7 @@
   system.activationScripts.optDirPermissions = ''
     mkdir -p /opt
     chmod 755 /opt
-    chown jason:users /opt
+    chown -R jason:users /opt
   '';
 
   # Since we're using fish as our shell
