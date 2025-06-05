@@ -1,0 +1,69 @@
+name: Update Claude Code
+
+on:
+  schedule:
+    # Runs every Monday at 8:00 AM UTC
+    - cron: '0 8 * * 1'
+  workflow_dispatch: # Allow manual triggering
+
+jobs:
+  update-claude-code:
+    runs-on: ubuntu-24.04-arm
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4.2.2
+
+    - name: Setup Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.21'
+
+    - name: Setup Nix
+      uses: cachix/install-nix-action@v31
+      with:
+        nix_path: nixpkgs=channel:nixos-unstable
+
+    - name: Setup Cachix
+      uses: cachix/cachix-action@v16
+      with:
+        name: jwieringa-nixos-config
+        authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
+
+    - name: Configure Git
+      run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+    - name: Run Claude Code Update
+      id: update
+      run: |
+        cd flakes/claude-code
+        go run make.go all
+        go run make.go update-check
+
+    - name: Create Pull Request
+      if: steps.update.outputs.changes_detected == 'true'
+      uses: peter-evans/create-pull-request@v5
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        commit-message: "Update claude-code to version ${{ steps.update.outputs.new_version }}"
+        title: "Update claude-code to version ${{ steps.update.outputs.new_version }}"
+        body: |
+          This is an automated update to the latest version of claude-code.
+          
+          **Changes:**
+          - Updated `@anthropic-ai/claude-code` to version `${{ steps.update.outputs.new_version }}`
+          - Regenerated package-lock.json
+          - Updated flake.nix with new version and hash
+          - Updated flake.lock
+          
+          Please review the changes before merging.
+          
+          @jwieringa
+        branch: "update-claude-code-${{ steps.update.outputs.new_version }}"
+        delete-branch: true
+        reviewers: jwieringa

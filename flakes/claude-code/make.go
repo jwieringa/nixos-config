@@ -26,30 +26,26 @@ type PackageJSON struct {
 func main() {
 	if len(os.Args) < 2 {
 		fmt.Println("Usage: go run make.go <task>")
-		fmt.Println("Tasks: all, update-version, generate-lock, update-hash, build, update-flake, clean, commit")
+		fmt.Println("Tasks: all, update-check, update-version, generate-lock, update-hash, build, update-flake, clean")
 		os.Exit(1)
 	}
 
 	task := os.Args[1]
 
-	switch task {
-	case "all":
-		runAll()
-	case "update-version":
-		updateVersion()
-	case "generate-lock":
-		generateLock()
-	case "update-hash":
-		updateHash()
-	case "build":
-		build()
-	case "update-flake":
-		updateFlake()
-	case "clean":
-		clean()
-	case "commit":
-		commit()
-	default:
+	tasks := map[string]func(){
+		"all":            runAll,
+		"update-check":   updateCheck,
+		"update-version": updateVersion,
+		"generate-lock":  generateLock,
+		"update-hash":    updateHash,
+		"build":          build,
+		"update-flake":   updateFlake,
+		"clean":          clean,
+	}
+
+	if taskFunc, exists := tasks[task]; exists {
+		taskFunc()
+	} else {
 		fmt.Printf("Unknown task: %s\n", task)
 		os.Exit(1)
 	}
@@ -63,7 +59,6 @@ func runAll() {
 	build()
 	updateFlake()
 	clean()
-	commit()
 }
 
 func updateVersion() {
@@ -234,23 +229,72 @@ func clean() {
 	}
 }
 
-func commit() {
-	fmt.Println("Committing changes...")
+func updateCheck() {
+	fmt.Println("Checking for claude-code changes...")
 
-	// Git add
-
-	cmd := exec.Command("git", "add", "flake.nix", "flake.lock", "package.json", "package-lock.json")
-	if err := cmd.Run(); err != nil {
-		fmt.Printf("Error adding files: %v\n", err)
+	// Check if there are any uncommitted changes in tracked files
+	cmd := exec.Command("git", "status", "--porcelain", "package.json", "package-lock.json", "flake.nix", "flake.lock")
+	output, err := cmd.Output()
+	if err != nil {
+		fmt.Printf("Error checking git status: %v\n", err)
 		os.Exit(1)
 	}
 
-	// Git commit
-	cmd = exec.Command("git", "commit", "-m", "Update claude code to latest version")
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	if err := cmd.Run(); err != nil {
-		fmt.Printf("Error committing: %v\n", err)
-		os.Exit(1)
+	// Check if there are changes
+	if len(output) > 0 {
+		fmt.Println("Changes detected in package.json")
+
+		// Get the new version
+		data, err := os.ReadFile("package.json")
+		if err != nil {
+			fmt.Printf("Error reading package.json: %v\n", err)
+			os.Exit(1)
+		}
+
+		var pkg PackageJSON
+		if err := json.Unmarshal(data, &pkg); err != nil {
+			fmt.Printf("Error parsing package.json: %v\n", err)
+			os.Exit(1)
+		}
+
+		version := pkg.Dependencies["@anthropic-ai/claude-code"]
+		if len(version) > 0 && version[0] == '^' {
+			version = version[1:] // Remove ^ prefix
+		}
+
+		// Output for GitHub Actions
+		if githubOutput := os.Getenv("GITHUB_OUTPUT"); githubOutput != "" {
+			f, err := os.OpenFile(githubOutput, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0644)
+			if err == nil {
+				fmt.Fprintf(f, "changes_detected=true\n")
+				fmt.Fprintf(f, "new_version=%s\n", version)
+				f.Close()
+			}
+		}
+
+		fmt.Printf("changes_detected=true\n")
+		fmt.Printf("new_version=%s\n", version)
+
+		// Show git status
+		cmd := exec.Command("git", "status", "--porcelain")
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		cmd.Run()
+	} else {
+		fmt.Println("No changes detected")
+
+		// Output for GitHub Actions
+		if githubOutput := os.Getenv("GITHUB_OUTPUT"); githubOutput != "" {
+			f, err := os.OpenFile(githubOutput, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0644)
+			if err == nil {
+				fmt.Fprintf(f, "changes_detected=false\n")
+				f.Close()
+			}
+		}
+
+		fmt.Printf("changes_detected=false\n")
+		os.Exit(0)
 	}
+
+	fmt.Println("Update check completed")
 }
