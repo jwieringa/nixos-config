@@ -108,5 +108,4 @@ jobs:
           delete-branch: true
           reviewers: jwieringa
           add-paths: |
-            *
-            !output.txt
+            . :!output.txt
