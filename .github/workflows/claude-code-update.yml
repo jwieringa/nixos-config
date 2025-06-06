@@ -40,11 +40,6 @@ jobs:
           git config --global user.email \
             "github-actions[bot]@users.noreply.github.com"
 
-      - name: Install Claude Code for Debugging
-        run: |
-          curl -fsSL https://claude.ai/install.sh | bash
-          echo "$HOME/.local/bin" >> $GITHUB_PATH
-
       - name: Run Claude Code Update
         id: update
         run: |
@@ -56,17 +51,21 @@ jobs:
         uses: anthropics/claude-code-action@v0.0.13
         if: failure()
         id: debug
-        env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-        run: |
-          cd flakes/claude-code
-          ./debug-build-failure.sh
-          # Check if Claude made any changes
-          if [[ -n "$(git status --porcelain)" ]]; then
-            echo "claude_changes_detected=true" >> $GITHUB_OUTPUT
-          else
-            echo "claude_changes_detected=false" >> $GITHUB_OUTPUT
-          fi
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          task: |
+            I'm debugging a failed Claude Code update process in the flakes/claude-code directory.
+
+            The build process involves:
+            1. Updating package.json with latest @anthropic-ai/claude-code version
+            2. Generating package-lock.json with npm install --package-lock-only
+            3. Building with nix to get the correct npmDepsHash
+            4. Updating flake.nix with the new hash
+            5. Running nix build .#claude-code to verify the build works
+            6. Updating flake.lock
+
+            Please analyze any error logs and build failures, then fix the issues found.
+            Keep running `go run make.go all` repeatedly until ALL errors are resolved and the command completes successfully.
 
       - name: Create Pull Request for Claude Code Update
         if: steps.update.outputs.changes_detected == 'true'
@@ -93,13 +92,16 @@ jobs:
           reviewers: jwieringa
 
       - name: Create Pull Request for Claude Debug Changes
-        if: failure() && steps.debug.conclusion == 'success' && steps.debug.outputs.claude_changes_detected == 'true'
+        if: failure() && steps.debug.conclusion == 'success'
         uses: peter-evans/create-pull-request@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: "Claude debug fixes for build failures"
           title: "Claude debug fixes for build failures"
-          body-path: flakes/claude-code/claude_pr_description.md
+          body: |
+            Claude automatically debugged and fixed build issues in the Claude Code update process.
+
+            This PR contains fixes applied by the Claude Code action to resolve build failures.
           branch: claude-debug-fixes-${{ github.run_number }}
           delete-branch: true
           reviewers: jwieringa
