@@ -53,19 +53,21 @@ jobs:
         id: debug
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-          task: |
-            I'm debugging a failed Claude Code update process in the flakes/claude-code directory.
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          with:
+            direct_prompt: |
+              I'm debugging a failed Claude Code update process in the flakes/claude-code directory.
 
-            The build process involves:
-            1. Updating package.json with latest @anthropic-ai/claude-code version
-            2. Generating package-lock.json with npm install --package-lock-only
-            3. Building with nix to get the correct npmDepsHash
-            4. Updating flake.nix with the new hash
-            5. Running nix build .#claude-code to verify the build works
-            6. Updating flake.lock
+              The build process involves:
+              1. Updating package.json with latest @anthropic-ai/claude-code version
+              2. Generating package-lock.json with npm install --package-lock-only
+              3. Building with nix to get the correct npmDepsHash
+              4. Updating flake.nix with the new hash
+              5. Running nix build .#claude-code to verify the build works
+              6. Updating flake.lock
 
-            Please analyze any error logs and build failures, then fix the issues found.
-            Keep running `go run make.go all` repeatedly until ALL errors are resolved and the command completes successfully.
+              Please analyze any error logs and build failures, then fix the issues found.
+              Keep running `go run make.go all` repeatedly until ALL errors are resolved and the command completes successfully.
 
       - name: Create Pull Request for Claude Code Update
         if: steps.update.outputs.changes_detected == 'true'
