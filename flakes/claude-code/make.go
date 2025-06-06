@@ -161,7 +161,7 @@ func generateLock() {
 
 func updateHash() {
 	fmt.Println("Updating npmDepsHash...")
-	cmd := exec.Command("nix", "build", ".#get-hash")
+	cmd := exec.Command("n", "build", ".#get-hash")
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		// This is expected to fail - we want to capture the hash from the error output
