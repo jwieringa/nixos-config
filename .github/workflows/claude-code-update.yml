@@ -107,3 +107,6 @@ jobs:
           branch: claude-debug-fixes-${{ github.run_number }}
           delete-branch: true
           reviewers: jwieringa
+          add-paths: |
+            *
+            !output.txt
