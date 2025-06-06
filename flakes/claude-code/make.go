@@ -150,7 +150,7 @@ func updateFlakeNix(version string) {
 
 func generateLock() {
 	fmt.Println("Generating package-lock.json...")
-	cmd := exec.Command("/run/current-system/sw/bin/nix-shell", "-p", "nodejs", "--run", "npm install --package-lock-only")
+	cmd := exec.Command("nix-shell", "-p", "nodejs", "--run", "npm install --package-lock-only")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	if err := cmd.Run(); err != nil {
@@ -161,7 +161,7 @@ func generateLock() {
 
 func updateHash() {
 	fmt.Println("Updating npmDepsHash...")
-	cmd := exec.Command("/run/current-system/sw/bin/nix", "build", ".#get-hash")
+	cmd := exec.Command("nix", "build", ".#get-hash")
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		// This is expected to fail - we want to capture the hash from the error output
@@ -201,7 +201,7 @@ func updateHash() {
 
 func build() {
 	fmt.Println("Building claude-code...")
-	cmd := exec.Command("/run/current-system/sw/bin/nix", "build", ".#claude-code")
+	cmd := exec.Command("nix", "build", ".#claude-code")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	if err := cmd.Run(); err != nil {
@@ -212,7 +212,7 @@ func build() {
 
 func updateFlake() {
 	fmt.Println("Updating flake.lock...")
-	cmd := exec.Command("/run/current-system/sw/bin/nix", "flake", "update")
+	cmd := exec.Command("nix", "flake", "update")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	if err := cmd.Run(); err != nil {

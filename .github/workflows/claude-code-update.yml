@@ -40,6 +40,11 @@ jobs:
           git config --global user.email \
             "github-actions[bot]@users.noreply.github.com"
 
+      - name: Install Claude Code for Debugging
+        run: |
+          curl -fsSL https://claude.ai/install.sh | bash
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
       - name: Run Claude Code Update
         id: update
         run: |
@@ -47,7 +52,22 @@ jobs:
           go run make.go all
           go run make.go update-check
 
-      - name: Create Pull Request
+      - name: Debug with Claude on Failure
+        if: failure()
+        id: debug
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          cd flakes/claude-code
+          ./debug-build-failure.sh
+          # Check if Claude made any changes
+          if [[ -n "$(git status --porcelain)" ]]; then
+            echo "claude_changes_detected=true" >> $GITHUB_OUTPUT
+          else
+            echo "claude_changes_detected=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create Pull Request for Claude Code Update
         if: steps.update.outputs.changes_detected == 'true'
         uses: peter-evans/create-pull-request@v5
         with:
@@ -68,5 +88,17 @@ jobs:
             Please review the changes before merging.
           branch: >-
             update-claude-code-${{ steps.update.outputs.new_version }}
+          delete-branch: true
+          reviewers: jwieringa
+
+      - name: Create Pull Request for Claude Debug Changes
+        if: failure() && steps.debug.conclusion == 'success' && steps.debug.outputs.claude_changes_detected == 'true'
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "Claude debug fixes for build failures"
+          title: "Claude debug fixes for build failures"
+          body-path: flakes/claude-code/claude_pr_description.md
+          branch: claude-debug-fixes-${{ github.run_number }}
           delete-branch: true
           reviewers: jwieringa
