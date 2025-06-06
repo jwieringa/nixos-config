@@ -140,11 +140,15 @@ in {
 
     plugins = with pkgs.vimPlugins; [
       nvim-lspconfig
-      nvim-treesitter
+      nvim-treesitter.withAllGrammars
+      nvim-treesitter-textobjects
+      conform-nvim
+      gitsigns-nvim
+      lualine-nvim
     ];
 
-    # extraConfig = (import ./vim-config.nix) { inherit sources; };
-  }; 
+    extraConfig = (import ./vim-config.nix) { inherit sources; };
+  };
 
   services.gpg-agent = {
     enable = true;

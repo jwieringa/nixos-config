@@ -35,9 +35,29 @@ parser_config.proto = {
   filetype = "proto", -- if filetype does not agrees with parser name
 }
 
+-- Configure terraform/hcl parsers
+parser_config.terraform = {
+  filetype = "terraform",
+}
+
+parser_config.hcl = {
+  filetype = "hcl",
+}
+
 ---------------------------------------------------------------------
--- Add our treesitter textobjects
+-- Configure treesitter
 require'nvim-treesitter.configs'.setup {
+  -- Don't try to install parsers in NixOS - they're provided by the Nix package
+  auto_install = false,
+
+  highlight = {
+    enable = true,
+    additional_vim_regex_highlighting = false,
+  },
+
+  indent = {
+    enable = true,
+  },
   textobjects = {
     select = {
       enable = true,
@@ -113,4 +133,3 @@ vim.opt.termsync = false
 
 EOF
 ''
-
