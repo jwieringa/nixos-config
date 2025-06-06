@@ -7,7 +7,7 @@
       },
       "locked": {
         "lastModified": 1,
-        "narHash": "sha256-5p1J/wVCoeuhZizu2MB9omE6wRheNZivtF8BlHxs+Lc=",
+        "narHash": "sha256-lnXq0xd/aFW5GHHii6r7Mshosfw9YDTPorMSTGsiCY0=",
         "path": "./flakes/claude-code",
         "type": "path"
       },
