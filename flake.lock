@@ -7,7 +7,7 @@
       },
       "locked": {
         "lastModified": 1,
-        "narHash": "sha256-lnXq0xd/aFW5GHHii6r7Mshosfw9YDTPorMSTGsiCY0=",
+        "narHash": "sha256-A3KyGwVcw/8JfSy/4mrTv2Tt6F/kAgn19UyE57b79fY=",
         "path": "./flakes/claude-code",
         "type": "path"
       },
@@ -91,10 +91,12 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 0,
-        "narHash": "sha256-bFufQGSAEYQgjtc4wMrobS5HWN0hDP+ZX+zthYcml9U=",
-        "path": "/nix/store/dli48i29mmjfxn9v0igzw0na6iz94b2h-source",
-        "type": "path"
+        "lastModified": 1748856973,
+        "narHash": "sha256-RlTsJUvvr8ErjPBsiwrGbbHYW8XbB/oek0Gi78XdWKg=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "e4b09e47ace7d87de083786b404bf232eb6c89d8",
+        "type": "github"
       },
       "original": {
         "id": "nixpkgs",
@@ -195,11 +197,11 @@
         "nixpkgs": "nixpkgs_3"
       },
       "locked": {
-        "lastModified": 1749039213,
-        "narHash": "sha256-RatZG+L7Jse3hESJNBfzaUgmpvDQuNsVyegoV5bhymE=",
+        "lastModified": 1749211991,
+        "narHash": "sha256-30IX6pLr4KU8HgSd2aHleRHS/UAubNk4yVHsVEwWoL0=",
         "owner": "mitchellh",
         "repo": "zig-overlay",
-        "rev": "444738d1367615d2bcd3698f433f096061fd8ff4",
+        "rev": "df6f7ca7d6d953e7659d185e6a8bf12b9e591d07",
         "type": "github"
       },
       "original": {
