@@ -53,6 +53,7 @@ jobs:
           go run make.go update-check
 
       - name: Debug with Claude on Failure
+        uses: anthropics/claude-code-action@v0.0.13
         if: failure()
         id: debug
         env:
