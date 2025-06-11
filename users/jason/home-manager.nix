@@ -29,6 +29,7 @@ in {
     pkgs.git
     pkgs.htop
     pkgs.jq
+    pkgs.packer
     pkgs.ripgrep
     pkgs.tfswitch
     pkgs.tree
