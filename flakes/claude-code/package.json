@@ -3,6 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@anthropic-ai/claude-code": "^1.0.16"
+    "@anthropic-ai/claude-code": "^1.0.22"
   }
 }
