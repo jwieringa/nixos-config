@@ -32,7 +32,7 @@
               chmod +x $out/lib/node_modules/@anthropic-ai/claude-code/cli.js
               cat > $out/bin/claude <<EOF
               #!/usr/bin/env bash
-              exec ${pkgs.nodejs_20}/bin/node $out/lib/node_modules/@anthropic-ai/claude-code/cli.js "\$@"
+              exec ${pkgs.nodejs_20}/bin/node --max-listeners=20 $out/lib/node_modules/@anthropic-ai/claude-code/cli.js "\$@"
               EOF
               chmod +x $out/bin/claude
             '';
