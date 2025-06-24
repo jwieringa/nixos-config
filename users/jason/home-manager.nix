@@ -65,6 +65,7 @@ in {
       "source ${sources.theme-bobthefish}/functions/fish_title.fish"
       # (builtins.readFile ./config.fish)
       "set -g SHELL ${pkgs.fish}/bin/fish"
+      "set -gx PATH /opt/terraform/bin $PATH"
     ]));
 
     shellAliases = {

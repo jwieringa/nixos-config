@@ -96,6 +96,8 @@ require'nvim-treesitter.configs'.setup {
 require("conform").setup({
   formatters_by_ft = {
     cpp = { "clang_format" },
+    terraform = { "terraform_fmt" },
+    hcl = { "terraform_fmt" },
   },
 
   format_on_save = {
