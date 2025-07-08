@@ -17,10 +17,7 @@
       fsType = "ext4";
     };
 
-  fileSystems."/boot" =
-    { device = "/dev/disk/by-label/ESP";
-      fsType = "vfat";
-    };
+  # No separate boot partition - boot is on root filesystem
 
   swapDevices = [ ];
 
