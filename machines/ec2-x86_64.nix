@@ -13,7 +13,7 @@
   # Override boot configuration to use GRUB instead of systemd-boot
   boot.loader.systemd-boot.enable = lib.mkForce false;
   boot.loader.grub.enable = lib.mkForce true;
-  boot.loader.grub.device = "/dev/nvme0n1";
+  boot.loader.grub.device = lib.mkForce "/dev/nvme0n1";
   boot.loader.efi.canTouchEfiVariables = lib.mkForce false;
 
   # EC2 uses eth0 interface typically
