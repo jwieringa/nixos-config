@@ -44,5 +44,10 @@
       system = "aarch64-linux";
       user   = "jason";
     };
+    
+    nixosConfigurations.ec2-x86_64 = mkSystem "ec2-x86_64" {
+      system = "x86_64-linux";
+      user   = "jason";
+    };
   };
 }
