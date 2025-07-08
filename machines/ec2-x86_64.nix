@@ -10,6 +10,12 @@
   # Use stable kernel for better EC2 compatibility
   boot.kernelPackages = lib.mkForce pkgs.linuxPackages;
 
+  # Override boot configuration to use GRUB instead of systemd-boot
+  boot.loader.systemd-boot.enable = lib.mkForce false;
+  boot.loader.grub.enable = lib.mkForce true;
+  boot.loader.grub.device = "/dev/nvme0n1";
+  boot.loader.efi.canTouchEfiVariables = lib.mkForce false;
+
   # EC2 uses eth0 interface typically
   networking.interfaces.eth0.useDHCP = true;
 
