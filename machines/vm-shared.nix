@@ -119,6 +119,7 @@ in {
     killall
     niv
     xclip
+    zig
 
     # For hypervisors that support auto-resizing, this script forces it.
     # I've noticed not everyone listens to the udev events so this is a hack.
