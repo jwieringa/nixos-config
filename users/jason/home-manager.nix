@@ -53,6 +53,17 @@ in {
   xdg.configFile = {
   };
 
+  # GNOME dconf settings
+  dconf.settings = {
+    "org/gnome/desktop/screensaver" = {
+      lock-enabled = true;
+      lock-delay = lib.hm.gvariant.mkUint32 14400; # 4 hours in seconds
+    };
+    "org/gnome/desktop/session" = {
+      idle-delay = lib.hm.gvariant.mkUint32 14400; # 4 hours in seconds
+    };
+  };
+
   #---------------------------------------------------------------------
   # Programs
   #---------------------------------------------------------------------
