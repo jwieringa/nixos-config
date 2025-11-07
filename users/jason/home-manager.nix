@@ -21,7 +21,9 @@ in {
 
   # Packages installed in the OS available to all projects
   home.packages = [
+    pkgs.awscli2
     pkgs.bat
+    pkgs.dig
     pkgs.fd
     pkgs.firefox
     pkgs.fzf
@@ -35,6 +37,7 @@ in {
     pkgs.tree
     pkgs.watch
     pkgs.which
+    pkgs.whois
   ];
 
   #---------------------------------------------------------------------
