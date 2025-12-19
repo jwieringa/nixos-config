@@ -27,6 +27,7 @@ in {
     pkgs.fd
     pkgs.firefox
     pkgs.fzf
+    pkgs.gh
     pkgs.ghostty
     pkgs.git
     pkgs.htop
