@@ -12,7 +12,7 @@
         
         claudeCodeBase = {
           pname = "claude-code";
-          version = "2.1.9";
+          version = "2.1.17";
           src = ./.;
         };
       in
@@ -20,7 +20,7 @@
         packages = {
           # Normal build
           claude-code = pkgs.buildNpmPackage (claudeCodeBase // {
-            npmDepsHash = "sha256-9jgbA2xIGTPXVguNdlevez7X/MhlbMc1f3VXJGTV1x0=";
+            npmDepsHash = "sha256-Mq8MG33syN6hKtouFySbG8tIYGSevGOvQF2CzCpQP6w=";
             
             # Disable npm build since there's no build script
             dontNpmBuild = true;
