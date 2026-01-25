@@ -1,5 +1,5 @@
 {
-  description = "claude-code global package";
+  description = "claude-code native binary";
 
   inputs = {
     flake-utils.url = "github:numtide/flake-utils";
@@ -9,50 +9,60 @@
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
-        
-        claudeCodeBase = {
-          pname = "claude-code";
-          version = "2.1.17";
-          src = ./.;
+
+        version = "2.1.19";
+
+        platformMap = {
+          "x86_64-linux" = "linux-x64";
+          "aarch64-linux" = "linux-arm64";
         };
+
+        hashMap = {
+          "x86_64-linux" = "0i59yw3hmfcv4yka7lpjhxiplfik0gnpvdbn6c9kpkqyhxriqajf";
+          "aarch64-linux" = "1fqvgf593di1d881zs9w1kyyj8nicdqp469gmbvxcq579jr62jwc";
+        };
+
+        platform = platformMap.${system} or (throw "Unsupported system: ${system}");
+        baseUrl = "https://storage.googleapis.com/claude-code-dist-86c565f3-f756-42ad-8dfa-d59b1c096819/claude-code-releases";
+
       in
       {
         packages = {
-          # Normal build
-          claude-code = pkgs.buildNpmPackage (claudeCodeBase // {
-            npmDepsHash = "sha256-Mq8MG33syN6hKtouFySbG8tIYGSevGOvQF2CzCpQP6w=";
-            
-            # Disable npm build since there's no build script
-            dontNpmBuild = true;
-            
-            # Install phase to make the package globally available
+          claude-code = pkgs.stdenv.mkDerivation {
+            pname = "claude-code";
+            inherit version;
+
+            src = pkgs.fetchurl {
+              url = "${baseUrl}/${version}/${platform}/claude";
+              sha256 = hashMap.${system};
+            };
+
+            dontUnpack = true;
+            dontBuild = true;
+
+            nativeBuildInputs = [ pkgs.autoPatchelfHook ];
+            buildInputs = [ pkgs.stdenv.cc.cc.lib ];
+
             installPhase = ''
-              mkdir -p $out/bin $out/lib/node_modules/@anthropic-ai
-              cp -r node_modules/@anthropic-ai/claude-code $out/lib/node_modules/@anthropic-ai/
-              chmod +x $out/lib/node_modules/@anthropic-ai/claude-code/cli.js
+              mkdir -p $out/bin $out/libexec
+              cp $src $out/libexec/claude-bin
+              chmod +x $out/libexec/claude-bin
+
               cat > $out/bin/claude <<EOF
-              #!/usr/bin/env bash
-              exec env DISABLE_AUTOUPDATER=1 ${pkgs.nodejs_20}/bin/node $out/lib/node_modules/@anthropic-ai/claude-code/cli.js "\$@"
-              EOF
+#!/usr/bin/env bash
+exec env DISABLE_AUTOUPDATER=1 $out/libexec/claude-bin "\$@"
+EOF
               chmod +x $out/bin/claude
             '';
-          });
-          
-          # Hash getter
-          get-hash = pkgs.buildNpmPackage (claudeCodeBase // {
-            npmDepsHash = pkgs.lib.fakeHash;
-          });
-          
-          # Default package
+          };
+
           default = self.packages.${system}.claude-code;
         };
 
-        # Create an app that can be run
         apps.default = flake-utils.lib.mkApp {
           drv = self.packages.${system}.claude-code;
           name = "claude";
         };
-
       }
     );
 }

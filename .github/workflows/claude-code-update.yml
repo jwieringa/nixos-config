@@ -19,11 +19,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4.2.2
 
-      - name: Setup Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: '1.21'
-
       - name: Setup Nix
         uses: cachix/install-nix-action@v31
         with:
@@ -45,29 +40,7 @@ jobs:
         id: update
         run: |
           cd flakes/claude-code
-          go run make.go all
-          go run make.go update-check
-
-      # - name: Debug with Claude on Failure
-      #   uses: anthropics/claude-code-action@v0.0.13
-      #   if: failure()
-      #   id: debug
-      #   with:
-      #     anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-      #     github_token: ${{ secrets.GITHUB_TOKEN }}
-      #     direct_prompt: |
-      #       I'm debugging a failed Claude Code update process in the flakes/claude-code directory.
-
-      #       The build process involves:
-      #       1. Updating package.json with latest @anthropic-ai/claude-code version
-      #       2. Generating package-lock.json with npm install --package-lock-only
-      #       3. Building with nix to get the correct npmDepsHash
-      #       4. Updating flake.nix with the new hash
-      #       5. Running nix build .#claude-code to verify the build works
-      #       6. Updating flake.lock
-
-      #       Please analyze any error logs and build failures, then fix the issues found.
-      #       Keep running `go run make.go all` repeatedly until ALL errors are resolved and the command completes successfully.
+          ./update.sh
 
       - name: Create Pull Request for Claude Code Update
         if: steps.update.outputs.changes_detected == 'true'
@@ -82,9 +55,8 @@ jobs:
             This is an automated update to the latest version of claude-code.
 
             **Changes:**
-            - Updated `@anthropic-ai/claude-code` to version `${{ steps.update.outputs.new_version }}`
-            - Regenerated package-lock.json
-            - Updated flake.nix with new version and hash
+            - Updated claude-code to version `${{ steps.update.outputs.new_version }}`
+            - Updated flake.nix with new version and hashes
             - Updated flake.lock
 
             Please review the changes before merging.
@@ -92,20 +64,3 @@ jobs:
             update-claude-code-${{ steps.update.outputs.new_version }}
           delete-branch: true
           reviewers: jwieringa
-
-      # - name: Create Pull Request for Claude Debug Changes
-      #   if: failure() && steps.debug.conclusion == 'success'
-      #   uses: peter-evans/create-pull-request@v5
-      #   with:
-      #     token: ${{ secrets.GITHUB_TOKEN }}
-      #     commit-message: "Claude debug fixes for build failures"
-      #     title: "Claude debug fixes for build failures"
-      #     body: |
-      #       Claude automatically debugged and fixed build issues in the Claude Code update process.
-
-      #       This PR contains fixes applied by the Claude Code action to resolve build failures.
-      #     branch: claude-debug-fixes-${{ github.run_number }}
-      #     delete-branch: true
-      #     reviewers: jwieringa
-      #     add-paths: |
-      #       . :!output.txt
