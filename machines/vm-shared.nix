@@ -1,4 +1,4 @@
-{ config, pkgs, lib, currentSystem, currentSystemName, ... }:
+{ config, pkgs, lib, inputs, currentSystem, currentSystemName, ... }:
 
 let
   # The desktop environment we want. Set to one of:
@@ -114,7 +114,7 @@ in {
   # $ nix search wget
   environment.systemPackages = with pkgs; [
     cachix
-    claude-code
+    inputs.llm-agents.packages.${pkgs.system}.claude-code
     gnumake
     killall
     niv

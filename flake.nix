@@ -14,9 +14,7 @@
 
     # Other packages
     zig.url = "github:mitchellh/zig-overlay";
-    
-    # Local flakes
-    claude-code.url = "path:./flakes/claude-code";
+    llm-agents.url = "github:numtide/llm-agents.nix";
   };
 
   outputs = { self, nixpkgs, home-manager, ... }@inputs: let
@@ -26,8 +24,6 @@
       (final: prev: {
         # gh CLI on stable has bugs.
         gh = inputs.nixpkgs-unstable.legacyPackages.${prev.system}.gh;
-        # Add claude-code globally
-        claude-code = inputs.claude-code.packages.${prev.system}.default;
       })
     ];
 
