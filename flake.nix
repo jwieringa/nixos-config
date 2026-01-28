@@ -15,6 +15,7 @@
     # Other packages
     zig.url = "github:mitchellh/zig-overlay";
     llm-agents.url = "github:numtide/llm-agents.nix";
+    bridge-cli.url = "path:./flakes/bridge-cli";
   };
 
   outputs = { self, nixpkgs, home-manager, ... }@inputs: let

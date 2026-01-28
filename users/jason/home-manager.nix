@@ -40,6 +40,7 @@ in {
     pkgs.watch
     pkgs.which
     pkgs.whois
+    inputs.bridge-cli.packages.${pkgs.system}.default
   ];
 
   #---------------------------------------------------------------------
