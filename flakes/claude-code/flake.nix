@@ -10,7 +10,7 @@
       let
         pkgs = nixpkgs.legacyPackages.${system};
 
-        version = "2.1.19";
+        version = "2.1.20";
 
         platformMap = {
           "x86_64-linux" = "linux-x64";
@@ -18,8 +18,8 @@
         };
 
         hashMap = {
-          "x86_64-linux" = "0i59yw3hmfcv4yka7lpjhxiplfik0gnpvdbn6c9kpkqyhxriqajf";
-          "aarch64-linux" = "1fqvgf593di1d881zs9w1kyyj8nicdqp469gmbvxcq579jr62jwc";
+          "x86_64-linux" = "sha256-+dNpj1N4pIbbLU7qXID5XCzrQQ+86p/8VwO1qslXTPw=";
+          "aarch64-linux" = "sha256-64gBx6SoUBshwjXzZnTxcyjmXnls+KYZazv5ojrhb5k=";
         };
 
         platform = platformMap.${system} or (throw "Unsupported system: ${system}");
@@ -39,6 +39,7 @@
 
             dontUnpack = true;
             dontBuild = true;
+            dontStrip = true;
 
             nativeBuildInputs = [ pkgs.autoPatchelfHook ];
             buildInputs = [ pkgs.stdenv.cc.cc.lib ];
