@@ -41,6 +41,10 @@ in {
     pkgs.which
     pkgs.whois
     inputs.bridge-cli.packages.${pkgs.system}.default
+
+    # Audio tools for microphone passthrough from macOS host
+    pkgs.alsa-utils
+    pkgs.sox
   ];
 
   #---------------------------------------------------------------------
