@@ -6,12 +6,12 @@
 
   # Add ~/.local/bin to PATH
   environment.localBinInPath = true;
-  
+
   # Create terraform directory with permissions for jason
   system.activationScripts.terraformDir = ''
     mkdir -p /opt/terraform/
   '';
- 
+
   # Make /opt directory manageable by jason
   system.activationScripts.optDirPermissions = ''
     mkdir -p /opt
@@ -25,7 +25,11 @@
   users.users.jason = {
     isNormalUser = true;
     home = "/home/jason";
-    extraGroups = [ "docker" "lxd" "wheel" ];
+    extraGroups = [
+      "docker"
+      "lxd"
+      "wheel"
+    ];
     shell = pkgs.fish;
     hashedPassword = "$6$2Xl8HyXvIvvKz72N$tH05lpPXk1MiZofDkhZs8W6K.0Xs0p3Xlwh4FO/x.3N.R/BluK3zB/IzrgtPiU9/jm2jPctiEBCLOJs8aFudo.";
     openssh.authorizedKeys.keys = [

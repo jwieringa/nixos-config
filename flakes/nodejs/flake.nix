@@ -6,11 +6,17 @@
     flake-utils.url = "github:numtide/flake-utils";
   };
 
-  outputs = { self, nixpkgs, flake-utils }:
-    flake-utils.lib.eachDefaultSystem (system:
+  outputs =
+    {
+      self,
+      nixpkgs,
+      flake-utils,
+    }:
+    flake-utils.lib.eachDefaultSystem (
+      system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
-        
+
         # Use the latest Node.js LTS version from nixpkgs
         nodejs = pkgs.nodejs_22;
       in
@@ -28,19 +34,19 @@
             nodePackages.prettier
             nodePackages.eslint
             nodePackages.nodemon
-            
+
             # Build dependencies that are often needed
             python3
             gcc
             gnumake
             pkg-config
-            
+
             # Additional useful tools
             git
             curl
             jq
           ];
-          
+
           shellHook = ''
             echo "Node.js development environment"
             echo "Node.js: $(node --version)"
@@ -56,5 +62,6 @@
             echo "  - node-gyp (for native modules)"
           '';
         };
-      });
+      }
+    );
 }

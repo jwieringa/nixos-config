@@ -1,16 +1,34 @@
-# Edit this configuration file to define what should be installed on
-# your system.  Help is available in the configuration.nix(5) man page
-# and in the NixOS manual (accessible by running ‘nixos-help’).
+{
+  config,
+  pkgs,
+  lib,
+  inputs,
+  currentSystemName,
+  ...
+}:
 
-{ config, pkgs, lib, ... }: {
+{
   imports = [
     ./hardware/vm-aarch64.nix
-    ../modules/vmware-guest.nix
-    ./vm-shared.nix
+    ../modules/nixos
+    ../modules/nixos/vmware-guest.nix
+    ./desktop/gnome.nix
   ];
 
+  # Enable NixOS modules
+  my.boot.enable = true;
+  my.networking.enable = true;
+  my.nix.enable = true;
+  my.audio.enable = true;
+  my.i18n.enable = true;
+  my.openssh.enable = true;
+  my.tailscale.enable = true;
+  my.onepassword.enable = true;
+  my.virtualization.docker.enable = true;
+  my.virtualization.lxd.enable = true;
+
   # Setup qemu so we can run x86_64 binaries
-  boot.binfmt.emulatedSystems = ["x86_64-linux"];
+  boot.binfmt.emulatedSystems = [ "x86_64-linux" ];
 
   # Disable the default module and import our override. We have
   # customizations to make this work on aarch64.
@@ -25,6 +43,24 @@
 
   # This works through our custom module imported above
   virtualisation.vmware.guest.enable = true;
+
+  # System packages
+  environment.systemPackages = with pkgs; [
+    cachix
+    inputs.llm-agents.packages.${pkgs.system}.claude-code
+    gnumake
+    killall
+    xclip
+    zig
+
+    # For hypervisors that support auto-resizing, this script forces it.
+    (writeShellScriptBin "xrandr-auto" ''
+      xrandr --output Virtual-1 --auto
+    '')
+
+    # Needed for the vmware user tools clipboard to work.
+    gtkmm3
+  ];
 
   # Share our host filesystem
   fileSystems."/host" = {

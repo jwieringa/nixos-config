@@ -6,16 +6,24 @@
     flake-utils.url = "github:numtide/flake-utils";
   };
 
-  outputs = { self, nixpkgs, flake-utils }:
-    flake-utils.lib.eachDefaultSystem (system:
+  outputs =
+    {
+      self,
+      nixpkgs,
+      flake-utils,
+    }:
+    flake-utils.lib.eachDefaultSystem (
+      system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
 
-        mkNpmScript = name: npmCmd: pkgs.writeShellApplication {
-          inherit name;
-          runtimeInputs = [ pkgs.nodejs_20 ];
-          text = "npm run ${npmCmd}";
-        };
+        mkNpmScript =
+          name: npmCmd:
+          pkgs.writeShellApplication {
+            inherit name;
+            runtimeInputs = [ pkgs.nodejs_20 ];
+            text = "npm run ${npmCmd}";
+          };
 
         scripts = {
           deps = pkgs.writeShellApplication {
@@ -39,7 +47,8 @@
           buildInputs = [
             pkgs.nodejs_20
             pkgs.yarn
-          ] ++ builtins.attrValues scripts;
+          ]
+          ++ builtins.attrValues scripts;
 
           shellHook = ''
             export PATH="$PWD/node_modules/.bin:$PATH"
