@@ -16,9 +16,8 @@ let
   machineConfig = ../machines/${name}.nix;
   userOSConfig = ../users/${user}/nixos.nix;
   userHMConfig = ../modules/home;
-  systemFunc = nixpkgs.lib.nixosSystem;
 in
-systemFunc rec {
+nixpkgs.lib.nixosSystem {
   inherit system;
 
   specialArgs = {

@@ -11,6 +11,7 @@
     ./1password.nix
     ./openssh.nix
     ./tailscale.nix
+    ./gnome.nix
   ];
 
   # Common system defaults

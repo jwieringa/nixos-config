@@ -3,7 +3,6 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    flake-utils.url = "github:numtide/flake-utils";
     nixpkgs-ruby.url = "github:bobvanderlinden/nixpkgs-ruby";
   };
 
@@ -12,16 +11,24 @@
       self,
       nixpkgs,
       nixpkgs-ruby,
-      flake-utils,
     }:
-    flake-utils.lib.eachDefaultSystem (
-      system:
-      let
-        pkgs = nixpkgs.legacyPackages.${system};
-        ruby = nixpkgs-ruby.packages.${system}."ruby-3.1.7";
-      in
-      {
-        devShells = rec {
+    let
+      supportedSystems = [
+        "x86_64-linux"
+        "aarch64-linux"
+        "x86_64-darwin"
+        "aarch64-darwin"
+      ];
+      forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
+    in
+    {
+      devShells = forAllSystems (
+        system:
+        let
+          pkgs = nixpkgs.legacyPackages.${system};
+          ruby = nixpkgs-ruby.packages.${system}."ruby-3.1.7";
+        in
+        rec {
           default = run;
 
           run = pkgs.mkShell {
@@ -76,8 +83,8 @@
               if ! pg_ctl status > /dev/null 2>&1; then
                 echo "Starting PostgreSQL server..."
                 # Start PostgreSQL detached with -w flag to wait until startup is complete
-                pg_ctl start -D $PGDATA -l $PGLOG -o "--unix_socket_directories='$PGHOST'" -w > /dev/null 2>&1 
-                
+                pg_ctl start -D $PGDATA -l $PGLOG -o "--unix_socket_directories='$PGHOST'" -w > /dev/null 2>&1
+
                 if pg_ctl status > /dev/null 2>&1; then
                   echo "PostgreSQL server started successfully."
                 else
@@ -104,10 +111,10 @@
               if ! pgrep -f "mysqld.*$MYSQL_DATADIR" > /dev/null; then
                 echo "Starting MySQL server..."
                 mysqld --datadir=$MYSQL_DATADIR --socket=$MYSQL_UNIX_PORT --pid-file=$MYSQL_HOME/mysql.pid --log-error=$MYSQL_LOG &
-                
+
                 # Wait a moment for MySQL to start
                 sleep 2
-                
+
                 if pgrep -f "mysqld.*$MYSQL_DATADIR" > /dev/null; then
                   echo "MySQL server started successfully."
                   echo "Default credentials: User 'root' with no password."
@@ -130,7 +137,7 @@
               if ! pgrep -f "redis-server.*$REDIS_PORT" > /dev/null; then
                 echo "Starting Redis server..."
                 redis-server --daemonize yes --port $REDIS_PORT --dir $REDIS_HOME --pidfile $REDIS_HOME/redis.pid --logfile $REDIS_HOME/redis.log
-                
+
                 if pgrep -f "redis-server.*$REDIS_PORT" > /dev/null; then
                   echo "Redis server started successfully."
                   echo "Redis URL: $REDIS_URL"
@@ -145,7 +152,7 @@
               true  # Ensure the last command returns success
             '';
           };
-        };
-      }
-    );
+        }
+      );
+    };
 }

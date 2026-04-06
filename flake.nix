@@ -19,11 +19,6 @@
     };
     # llm-agents needs its own nixpkgs (requires fetchPnpmDeps not in 25.05)
     llm-agents.url = "github:numtide/llm-agents.nix";
-    bridge-cli = {
-      url = "path:./flakes/bridge-cli";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     # Fish plugins (non-flake sources, replacing Niv)
     fish-fzf = {
       url = "github:jethrokuan/fzf";

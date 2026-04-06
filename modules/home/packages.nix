@@ -1,4 +1,4 @@
-{ pkgs, inputs, ... }:
+{ pkgs, ... }:
 
 let
   manpager = (
@@ -28,7 +28,7 @@ in
     pkgs.watch
     pkgs.which
     pkgs.whois
-    inputs.bridge-cli.packages.${pkgs.system}.default
+    pkgs.bridge-cli
 
     # Audio tools for microphone passthrough from macOS host
     pkgs.alsa-utils

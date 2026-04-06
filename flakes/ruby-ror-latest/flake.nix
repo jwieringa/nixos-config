@@ -3,7 +3,6 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    flake-utils.url = "github:numtide/flake-utils";
     nixpkgs-ruby.url = "github:bobvanderlinden/nixpkgs-ruby";
   };
 
@@ -12,16 +11,24 @@
       self,
       nixpkgs,
       nixpkgs-ruby,
-      flake-utils,
     }:
-    flake-utils.lib.eachDefaultSystem (
-      system:
-      let
-        pkgs = nixpkgs.legacyPackages.${system};
-        ruby = nixpkgs-ruby.packages.${system}."ruby-3.4.3";
-      in
-      {
-        devShells = rec {
+    let
+      supportedSystems = [
+        "x86_64-linux"
+        "aarch64-linux"
+        "x86_64-darwin"
+        "aarch64-darwin"
+      ];
+      forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
+    in
+    {
+      devShells = forAllSystems (
+        system:
+        let
+          pkgs = nixpkgs.legacyPackages.${system};
+          ruby = nixpkgs-ruby.packages.${system}."ruby-3.4.3";
+        in
+        rec {
           default = run;
 
           run = pkgs.mkShell {
@@ -51,8 +58,8 @@
               if ! pg_ctl status > /dev/null 2>&1; then
                 echo "Starting PostgreSQL server..."
                 # Start PostgreSQL detached with -w flag to wait until startup is complete
-                pg_ctl start -D $PGDATA -l $PGLOG -o "--unix_socket_directories='$PGHOST'" -w > /dev/null 2>&1 
-                
+                pg_ctl start -D $PGDATA -l $PGLOG -o "--unix_socket_directories='$PGHOST'" -w > /dev/null 2>&1
+
                 if pg_ctl status > /dev/null 2>&1; then
                   echo "PostgreSQL server started successfully."
                 else
@@ -66,7 +73,7 @@
               true  # Ensure the last command returns success
             '';
           };
-        };
-      }
-    );
+        }
+      );
+    };
 }
