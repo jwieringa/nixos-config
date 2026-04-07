@@ -10,7 +10,7 @@
       hist = "log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(r) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative";
       root = "rev-parse --show-toplevel";
     };
-    ignores = [ ];
+    ignores = [ "!.claude" ];
     extraConfig = {
       branch.autosetuprebase = "always";
       color.ui = true;
