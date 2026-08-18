@@ -5,6 +5,7 @@
     ./packages.nix
     ./fish.nix
     ./bash.nix
+    ./chromium.nix
     ./git.nix
     ./neovim.nix
     ./gnome-dconf.nix
