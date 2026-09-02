@@ -13,6 +13,7 @@
     ./gpg.nix
     ./direnv.nix
     ./terraform.nix
+    ./ruby.nix
   ];
 
   xdg.enable = true;
