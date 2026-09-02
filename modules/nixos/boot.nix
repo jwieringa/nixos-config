@@ -23,5 +23,9 @@ in
     # VMware, Parallels both only support this being 0 otherwise you see
     # "error switching console mode" on boot.
     boot.loader.systemd-boot.consoleMode = "0";
+
+    # Clear /tmp at each boot. It lives on the root filesystem here, so
+    # leftover nix-shell and scratch directories otherwise accumulate.
+    boot.tmp.cleanOnBoot = true;
   };
 }
