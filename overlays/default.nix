@@ -7,6 +7,10 @@
     # gh CLI on stable has bugs.
     gh = inputs.nixpkgs-unstable.legacyPackages.${prev.system}.gh;
 
+    # tfswitch on stable (1.4.5) ships an expired HashiCorp PGP key — see
+    # warrensbox/terraform-switcher#746. Unstable has 1.17.x with the fix.
+    tfswitch = inputs.nixpkgs-unstable.legacyPackages.${prev.system}.tfswitch;
+
     # CrunchyBridge CLI - packaged from GitHub releases
     bridge-cli =
       let
