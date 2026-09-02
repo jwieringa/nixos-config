@@ -12,6 +12,14 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # Ruby interpreters for the Rails dev shells (lib/devshell). Follows our
+    # nixpkgs so Ruby shares one glibc/openssl with the libraries the gems link
+    # against; the upstream binary cache has no aarch64-linux builds anyway.
+    nixpkgs-ruby = {
+      url = "github:bobvanderlinden/nixpkgs-ruby";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # Other packages
     zig = {
       url = "github:mitchellh/zig-overlay";
@@ -60,6 +68,13 @@
       mkSystem = import ./lib/mksystem.nix {
         inherit overlays nixpkgs inputs;
       };
+
+      # Rails project shells, entered from the app repos via
+      # `use flake "$HOME/prj/nixos-config#<project>-<ruby_version>"`.
+      devshell = import ./lib/devshell {
+        inherit pkgs;
+        inherit (inputs) nixpkgs-ruby;
+      };
     in
     {
       nixosConfigurations.vm-aarch64 = mkSystem "vm-aarch64" {
@@ -67,12 +82,15 @@
         user = "jason";
       };
 
-      devShells.${system}.default = pkgs.mkShell {
-        packages = with pkgs; [
-          nixfmt-rfc-style
-          nil
-        ];
-      };
+      devShells.${system} = {
+        default = pkgs.mkShell {
+          packages = with pkgs; [
+            nixfmt-rfc-style
+            nil
+          ];
+        };
+      }
+      // devshell.projects;
 
       checks.${system} = {
         system-build = self.nixosConfigurations.vm-aarch64.config.system.build.toplevel;
