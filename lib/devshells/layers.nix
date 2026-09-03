@@ -1,12 +1,14 @@
 # Dev-shell layers, each a small mkShell owning one concern. Project shells
-# compose them with `inputsFrom` (see default.nix).
+# compose them with `inputsFrom` (see default.nix). New layers must stay
+# within the Ruby-on-PostgreSQL scope: services and native libraries the
+# Rails apps need, no alternative databases.
 #
 # Conventions:
-# - Anything a gem extension links against goes in buildInputs (libpq,
-#   libmysqlclient, GEOS, ImageMagick, ...); tools go in packages.
+# - Anything a gem extension links against goes in buildInputs (libpq, GEOS,
+#   ImageMagick, ...); tools go in packages.
 # - Service hooks are idempotent because every worktree shares
-#   $HOME/postgres, $HOME/redis and $HOME/mysql: they only start a server
-#   when none is running.
+#   $HOME/postgres and $HOME/redis: they only start a server when none is
+#   running.
 # - Every hook ends with `true` so the concatenated shellHook never leaves
 #   direnv a non-zero exit status.
 { pkgs }:
@@ -95,44 +97,6 @@
     '';
   };
 
-  # The mysql2 gem links against libmysqlclient from this package.
-  mysql = pkgs.mkShell {
-    name = "mysql";
-    buildInputs = [ pkgs.mysql84 ];
-    shellHook = ''
-      export MYSQL_HOME=$HOME/mysql
-      export MYSQL_DATADIR=$MYSQL_HOME/data
-      export MYSQL_UNIX_PORT=$MYSQL_HOME/mysql.sock
-      export MYSQL_LOG=$MYSQL_HOME/mysql.log
-
-      mkdir -p $MYSQL_HOME
-
-      if [ ! -d $MYSQL_DATADIR ]; then
-        echo "Initializing MySQL database..."
-        mysqld --initialize-insecure --datadir=$MYSQL_DATADIR
-      fi
-
-      if ! pgrep -f "mysqld.*$MYSQL_DATADIR" > /dev/null; then
-        echo "Starting MySQL server..."
-        mysqld --datadir=$MYSQL_DATADIR --socket=$MYSQL_UNIX_PORT --pid-file=$MYSQL_HOME/mysql.pid --log-error=$MYSQL_LOG &
-
-        sleep 2
-
-        if pgrep -f "mysqld.*$MYSQL_DATADIR" > /dev/null; then
-          echo "MySQL server started successfully."
-          echo "Default credentials: User 'root' with no password."
-          echo "Connect using: mysql -u root -S $MYSQL_UNIX_PORT"
-        else
-          echo "WARNING: MySQL server failed to start. Check $MYSQL_LOG for details."
-        fi
-      else
-        echo "MySQL server is already running."
-      fi
-
-      true
-    '';
-  };
-
   # rgeo's extconf.rb has to be told where GEOS lives; rgeo-proj4 finds PROJ
   # through pkg-config.
   geo = pkgs.mkShell {
@@ -180,16 +144,5 @@
       nodejs
       yarn
     ];
-  };
-
-  # glib for Arrow/Parquet gem builds; docker-compose for Captain's
-  # container-managed services.
-  misc = pkgs.mkShell {
-    name = "misc";
-    buildInputs = [
-      pkgs.glib
-      pkgs.glib.dev
-    ];
-    packages = [ pkgs.docker-compose ];
   };
 }

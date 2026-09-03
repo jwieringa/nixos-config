@@ -1,4 +1,9 @@
-# Composable dev shells for the Rails apps (Iris, Captain, kracken).
+# Composable dev shells for the Rails apps (Iris, kracken).
+#
+# Scope: Ruby applications backed by PostgreSQL. Every project shell gets the
+# Ruby and PostgreSQL layers; the rest are opt-in per project. Other
+# databases are out of scope for now, so Captain (MySQL) still uses
+# flakes/ruby-ror-with-mysql.
 #
 # A layer is a small mkShell that owns one concern: a service plus its
 # autostart hook, or a native library plus the variables a gem's extconf.rb
@@ -21,17 +26,21 @@ let
   layers = import ./layers.nix { inherit pkgs; };
   bundlerCache = import ./bundler-cache.nix;
 
-  # Compose a project shell from a Ruby version and a list of layers, with a
+  # Compose a project shell from a Ruby version and its extra layers, with a
   # Bundler install tree shared by every worktree on the same toolchain.
   mkRailsShell =
     {
       project,
       rubyVersion,
-      include,
+      include ? [ ],
     }:
     let
       ruby = rubyFor rubyVersion;
-      allLayers = [ (layers.ruby ruby) ] ++ include;
+      allLayers = [
+        (layers.ruby ruby)
+        layers.postgres
+      ]
+      ++ include;
       cache = bundlerCache {
         inherit ruby;
         # Hash the layers' inputs, not the composed shell's own buildInputs:
