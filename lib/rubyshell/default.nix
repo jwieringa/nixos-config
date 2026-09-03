@@ -18,10 +18,26 @@ let
   # nixpkgs a second time. With `follows` both yield the same store path.
   rubyFor =
     version:
-    nixpkgs-ruby.lib.mkRuby {
-      inherit pkgs;
-      rubyVersion = version;
-    };
+    let
+      ruby = nixpkgs-ruby.lib.mkRuby {
+        inherit pkgs;
+        rubyVersion = version;
+      };
+    in
+    # Ruby before 3.2 does not compile with GCC 15, whose default dialect is
+    # C23: Onigmo's headers clash with "conflicting types for
+    # onig_jis_property". Building those versions as gnu17 restores the
+    # dialect GCC 14 used. nixpkgs-ruby pins nixos-25.05 upstream, so its CI
+    # never sees GCC 15 and no fix is coming from there. 3.2 and later build
+    # unmodified.
+    if lib.versionOlder version "3.2" then
+      ruby.overrideAttrs (old: {
+        env = (old.env or { }) // {
+          NIX_CFLAGS_COMPILE = toString (old.env.NIX_CFLAGS_COMPILE or "") + " -std=gnu17";
+        };
+      })
+    else
+      ruby;
 
   layers = import ./layers.nix { inherit pkgs; };
   bundlerCache = import ./bundler-cache.nix;
