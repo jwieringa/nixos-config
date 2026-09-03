@@ -16,10 +16,11 @@ in
     services.xserver = {
       enable = true;
       xkb.layout = "us";
-      desktopManager.gnome.enable = true;
-      # GNOME 50 is Wayland-only; the former `gdm.wayland` option was removed.
-      displayManager.gdm.enable = true;
     };
+
+    # GNOME 50 is Wayland-only; the former `gdm.wayland` option was removed.
+    services.desktopManager.gnome.enable = true;
+    services.displayManager.gdm.enable = true;
 
     # HiDPI scaling environment variables
     environment.variables = {

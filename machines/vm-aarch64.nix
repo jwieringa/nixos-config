@@ -41,7 +41,7 @@
   # System packages
   environment.systemPackages = with pkgs; [
     cachix
-    inputs.llm-agents.packages.${pkgs.system}.claude-code
+    inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.claude-code
     gnumake
     killall
     rtk
