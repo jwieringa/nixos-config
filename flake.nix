@@ -12,7 +12,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Ruby interpreters for the Rails dev shells (lib/devshell). Follows our
+    # Ruby interpreters for the Rails dev shells (lib/devshells). Follows our
     # nixpkgs so Ruby shares one glibc/openssl with the libraries the gems link
     # against; the upstream binary cache has no aarch64-linux builds anyway.
     nixpkgs-ruby = {
@@ -71,7 +71,7 @@
 
       # Rails project shells, entered from the app repos via
       # `use flake "$HOME/prj/nixos-config#<project>-<ruby_version>"`.
-      devshell = import ./lib/devshell {
+      devshell = import ./lib/devshells {
         inherit pkgs;
         inherit (inputs) nixpkgs-ruby;
       };
