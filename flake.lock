@@ -260,8 +260,6 @@
         "nixpkgs-ruby": "nixpkgs-ruby",
         "nixpkgs-unstable": "nixpkgs-unstable",
         "theme-bobthefish": "theme-bobthefish",
-        "tree-sitter-hcl": "tree-sitter-hcl",
-        "tree-sitter-proto": "tree-sitter-proto",
         "zig": "zig"
       }
     },
@@ -324,38 +322,6 @@
       "original": {
         "owner": "oh-my-fish",
         "repo": "theme-bobthefish",
-        "type": "github"
-      }
-    },
-    "tree-sitter-hcl": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1632605074,
-        "narHash": "sha256-kTkSgf3YCOgBLEAi1Op4oYsvWVGIXSc1wi/GS2K0MxU=",
-        "owner": "mitchellh",
-        "repo": "tree-sitter-hcl",
-        "rev": "bdc2ee0cbd19d22f8a1529e5c9d099029573c931",
-        "type": "github"
-      },
-      "original": {
-        "owner": "mitchellh",
-        "repo": "tree-sitter-hcl",
-        "type": "github"
-      }
-    },
-    "tree-sitter-proto": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1623515344,
-        "narHash": "sha256-cX+0YARIa9i8UymPPviyoj+Wh37AFYl9fsoNZMQXPgA=",
-        "owner": "mitchellh",
-        "repo": "tree-sitter-proto",
-        "rev": "42d82fa18f8afe59b5fc0b16c207ee4f84cb185f",
-        "type": "github"
-      },
-      "original": {
-        "owner": "mitchellh",
-        "repo": "tree-sitter-proto",
         "type": "github"
       }
     },

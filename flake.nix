@@ -40,16 +40,6 @@
       url = "github:oh-my-fish/theme-bobthefish";
       flake = false;
     };
-
-    # Treesitter grammars (non-flake sources, replacing Niv)
-    tree-sitter-proto = {
-      url = "github:mitchellh/tree-sitter-proto";
-      flake = false;
-    };
-    tree-sitter-hcl = {
-      url = "github:mitchellh/tree-sitter-hcl";
-      flake = false;
-    };
   };
 
   outputs =

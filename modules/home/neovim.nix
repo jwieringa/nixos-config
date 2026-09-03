@@ -1,4 +1,4 @@
-{ pkgs, inputs, ... }:
+{ pkgs, ... }:
 
 {
   programs.neovim = {
@@ -6,6 +6,9 @@
     vimAlias = true;
 
     withPython3 = true;
+    # No plugin here needs the Ruby provider; this is the new default and
+    # setting it explicitly silences the home-manager 26.05 warning.
+    withRuby = false;
 
     plugins = with pkgs.vimPlugins; [
       nvim-lspconfig
@@ -19,81 +22,54 @@
     extraConfig = ''
       lua <<EOF
       ---------------------------------------------------------------------
-      -- Add our custom treesitter parsers
-      local parser_config = require "nvim-treesitter.parsers".get_parser_configs()
-
-      parser_config.proto = {
-        install_info = {
-          url = "${inputs.tree-sitter-proto}",
-          files = {"src/parser.c"}
-        },
-        filetype = "proto",
-      }
-
-      parser_config.hcl = {
-        install_info = {
-          url = "${inputs.tree-sitter-hcl}",
-          files = {"src/parser.c"},
-        },
-        filetype = "hcl",
-      }
-
-      parser_config.terraform = {
-        install_info = {
-          url = "${inputs.tree-sitter-hcl}",
-          files = {"src/parser.c"},
-        },
-        filetype = "terraform",
-      }
+      -- Treesitter
+      --
+      -- nvim-treesitter (main branch) no longer configures highlighting or
+      -- indentation itself. Highlighting is Neovim core, indentation is the
+      -- plugin's indentexpr, and every parser and query comes from the Nix
+      -- package (withAllGrammars), so nothing is installed at runtime.
+      vim.api.nvim_create_autocmd('FileType', {
+        pattern = '*',
+        callback = function(args)
+          if not pcall(vim.treesitter.start, args.buf) then return end
+          vim.bo[args.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+        end,
+      })
 
       ---------------------------------------------------------------------
-      -- Configure treesitter
-      require'nvim-treesitter.configs'.setup {
-        -- Don't try to install parsers in NixOS - they're provided by the Nix package
-        auto_install = false,
-
-        highlight = {
-          enable = true,
-          additional_vim_regex_highlighting = false,
-        },
-
-        indent = {
-          enable = true,
-        },
-        textobjects = {
-          select = {
-            enable = true,
-            keymaps = {
-              ["af"] = "@function.outer",
-              ["if"] = "@function.inner",
-              ["ac"] = "@class.outer",
-              ["ic"] = "@class.inner",
-            },
-          },
-
-          move = {
-            enable = true,
-            set_jumps = true,
-            goto_next_start = {
-              ["]m"] = "@function.outer",
-              ["]]"] = "@class.outer",
-            },
-            goto_next_end = {
-              ["]M"] = "@function.outer",
-              ["]["] = "@class.outer",
-            },
-            goto_previous_start = {
-              ["[m"] = "@function.outer",
-              ["[["] = "@class.outer",
-            },
-            goto_previous_end = {
-              ["[M"] = "@function.outer",
-              ["[]"] = "@class.outer",
-            },
-          },
-        },
+      -- Treesitter text objects
+      require('nvim-treesitter-textobjects').setup {
+        select = { lookahead = false },
+        move = { set_jumps = true },
       }
 
+      local select = function(capture)
+        return function()
+          require('nvim-treesitter-textobjects.select').select_textobject(capture, 'textobjects')
+        end
+      end
+      local move = function(fn, capture)
+        return function()
+          require('nvim-treesitter-textobjects.move')[fn](capture, 'textobjects')
+        end
+      end
+
+      vim.keymap.set({ 'x', 'o' }, 'af', select('@function.outer'))
+      vim.keymap.set({ 'x', 'o' }, 'if', select('@function.inner'))
+      vim.keymap.set({ 'x', 'o' }, 'ac', select('@class.outer'))
+      vim.keymap.set({ 'x', 'o' }, 'ic', select('@class.inner'))
+
+      vim.keymap.set({ 'n', 'x', 'o' }, ']m', move('goto_next_start', '@function.outer'))
+      vim.keymap.set({ 'n', 'x', 'o' }, ']]', move('goto_next_start', '@class.outer'))
+      vim.keymap.set({ 'n', 'x', 'o' }, ']M', move('goto_next_end', '@function.outer'))
+      vim.keymap.set({ 'n', 'x', 'o' }, '][', move('goto_next_end', '@class.outer'))
+      vim.keymap.set({ 'n', 'x', 'o' }, '[m', move('goto_previous_start', '@function.outer'))
+      vim.keymap.set({ 'n', 'x', 'o' }, '[[', move('goto_previous_start', '@class.outer'))
+      vim.keymap.set({ 'n', 'x', 'o' }, '[M', move('goto_previous_end', '@function.outer'))
+      vim.keymap.set({ 'n', 'x', 'o' }, '[]', move('goto_previous_end', '@class.outer'))
+
+      ---------------------------------------------------------------------
+      -- Conform
       require("conform").setup({
         formatters_by_ft = {
           cpp = { "clang_format" },
