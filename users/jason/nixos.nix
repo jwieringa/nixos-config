@@ -27,7 +27,6 @@
     home = "/home/jason";
     extraGroups = [
       "docker"
-      "lxd"
       "wheel"
     ];
     shell = pkgs.fish;

@@ -25,7 +25,6 @@
   my.onepassword.enable = true;
   my.gnome.enable = true;
   my.virtualization.docker.enable = true;
-  my.virtualization.lxd.enable = true;
 
   # Setup qemu so we can run x86_64 binaries
   boot.binfmt.emulatedSystems = [ "x86_64-linux" ];
