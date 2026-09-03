@@ -17,10 +17,8 @@ in
       enable = true;
       xkb.layout = "us";
       desktopManager.gnome.enable = true;
-      displayManager.gdm = {
-        enable = true;
-        wayland = true;
-      };
+      # GNOME 50 is Wayland-only; the former `gdm.wayland` option was removed.
+      displayManager.gdm.enable = true;
     };
 
     # HiDPI scaling environment variables
