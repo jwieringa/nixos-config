@@ -93,6 +93,17 @@
             ''
               nixfmt --check ${self} && touch $out
             '';
+
+        # `nix flake check` only evaluates the dev shells above; it never
+        # builds them, so it cannot tell whether a given Ruby version
+        # actually compiles. Building each shell's `inputDerivation`, the
+        # target nixpkgs provides for exactly this purpose, forces its
+        # buildInputs, including the Ruby toolchain, to be realized. Ruby
+        # versions below 3.2 are compiled from source because the upstream
+        # binary cache has no aarch64-linux builds for them.
+        ruby-shells = pkgs.linkFarm "ruby-shells" (
+          pkgs.lib.mapAttrs (_: shell: shell.inputDerivation) rubyshell.projects
+        );
       };
     };
 }
