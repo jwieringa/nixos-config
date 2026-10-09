@@ -1,15 +1,17 @@
 { ... }:
 
 {
+  programs.delta = {
+    enable = true;
+    enableGitIntegration = true;
+    options = {
+      navigate = true; # n/N jump between files in the pager
+      line-numbers = true;
+    };
+  };
+
   programs.git = {
     enable = true;
-    delta = {
-      enable = true;
-      options = {
-        navigate = true; # n/N jump between files in the pager
-        line-numbers = true;
-      };
-    };
     ignores = [
       "vendor/bundle"
       ".envrc"
