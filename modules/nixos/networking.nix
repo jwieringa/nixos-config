@@ -22,8 +22,10 @@ in
     ];
     services.resolved = {
       enable = true;
-      dnsovertls = "true";
-      fallbackDns = [ ];
+      settings.Resolve = {
+        DNSOverTLS = true;
+        FallbackDNS = [ ];
+      };
     };
 
     time.timeZone = "Etc/UTC";
