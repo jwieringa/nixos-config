@@ -18,5 +18,13 @@
     "org/gnome/mutter" = {
       experimental-features = [ "scale-monitor-framebuffer" ];
     };
+
+    # Mutter starts Xwayland with -enable-ei-portal, so any X11 client that
+    # injects input through XTest (open-vm-tools' vmusr does) pops GNOME's
+    # "Remote Desktop / Allow Remote Interaction" dialog at login. Nothing
+    # here needs XTest; clipboard sync uses X selections, not XTest.
+    "org/gnome/mutter/wayland" = {
+      xwayland-disable-extension = [ "Xtest" ];
+    };
   };
 }

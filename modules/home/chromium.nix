@@ -9,10 +9,6 @@
   programs.chromium = {
     enable = true;
 
-    # Render natively on Wayland rather than through XWayland, which lets
-    # GNOME's HiDPI scaling apply to Chromium.
-    commandLineArgs = [ "--ozone-platform-hint=auto" ];
-
     extensions = [
       # Claude in Chrome
       # https://chromewebstore.google.com/detail/claude/fcoeoabgfenejglbffodgkkbkcdhcgfn

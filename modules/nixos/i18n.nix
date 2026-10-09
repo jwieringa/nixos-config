@@ -1,9 +1,4 @@
-{
-  config,
-  lib,
-  pkgs,
-  ...
-}:
+{ config, lib, ... }:
 
 let
   cfg = config.my.i18n;
@@ -14,15 +9,6 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    i18n = {
-      defaultLocale = "en_US.UTF-8";
-      inputMethod = {
-        enable = true;
-        type = "fcitx5";
-        fcitx5.addons = with pkgs; [
-          fcitx5-gtk
-        ];
-      };
-    };
+    i18n.defaultLocale = "en_US.UTF-8";
   };
 }

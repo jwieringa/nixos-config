@@ -72,16 +72,9 @@
     gnumake
     killall
     rtk
+    wl-clipboard
     xclip
     zig
-
-    # For hypervisors that support auto-resizing, this script forces it.
-    (writeShellScriptBin "xrandr-auto" ''
-      xrandr --output Virtual-1 --auto
-    '')
-
-    # Needed for the vmware user tools clipboard to work.
-    gtkmm3
   ];
 
   # Share our host filesystem
