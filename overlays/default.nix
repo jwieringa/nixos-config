@@ -15,6 +15,52 @@
     # warrensbox/terraform-switcher#746. Unstable has 1.17.x with the fix.
     tfswitch = inputs.nixpkgs-unstable.legacyPackages.${prev.system}.tfswitch;
 
+    # rtk (Rust Token Killer) - CLI proxy that filters and summarizes command
+    # output before it reaches an LLM context. Not in nixpkgs, so we package the
+    # upstream GitHub release binaries.
+    rtk =
+      let
+        version = "0.39.0";
+        assetMap = {
+          x86_64-linux = "rtk-x86_64-unknown-linux-musl.tar.gz";
+          aarch64-linux = "rtk-aarch64-unknown-linux-gnu.tar.gz";
+          x86_64-darwin = "rtk-x86_64-apple-darwin.tar.gz";
+          aarch64-darwin = "rtk-aarch64-apple-darwin.tar.gz";
+        };
+        hashMap = {
+          x86_64-linux = "sha256-BuWCuhmW7wPnakQbmJarp53Rt0bOU50igpbGgbHFQBw=";
+          aarch64-linux = "sha256-aP00y/9GhWgmoJLCYdZ7G4C1ee9sigQAwAieFDJecJ0=";
+          x86_64-darwin = "sha256-w7siXWnHKhoZD100GzlYv5I8ckKHRifvLZ+ALTdD/1w=";
+          aarch64-darwin = "sha256-DRQLq/ulTDcpizLnsq0fIcchebIrvN8Byc1mu5riiFU=";
+        };
+      in
+      prev.stdenv.mkDerivation {
+        pname = "rtk";
+        inherit version;
+
+        src = prev.fetchurl {
+          url = "https://github.com/rtk-ai/rtk/releases/download/v${version}/${assetMap.${prev.system}}";
+          hash = hashMap.${prev.system};
+        };
+
+        sourceRoot = ".";
+
+        nativeBuildInputs = prev.lib.optionals prev.stdenv.isLinux [ prev.autoPatchelfHook ];
+        buildInputs = prev.lib.optionals prev.stdenv.isLinux [ prev.stdenv.cc.cc.lib ];
+
+        installPhase = ''
+          runHook preInstall
+          install -Dm755 rtk $out/bin/rtk
+          runHook postInstall
+        '';
+
+        meta = {
+          description = "CLI proxy that filters and summarizes output before it reaches an LLM context";
+          homepage = "https://github.com/rtk-ai/rtk";
+          mainProgram = "rtk";
+        };
+      };
+
     # CrunchyBridge CLI - packaged from GitHub releases
     bridge-cli =
       let
