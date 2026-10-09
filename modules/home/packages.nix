@@ -9,6 +9,7 @@ let
 in
 {
   home.packages = [
+    pkgs.aws-sso-cli
     pkgs.awscli2
     pkgs.ssm-session-manager-plugin
     pkgs.bat
