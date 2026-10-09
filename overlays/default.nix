@@ -9,10 +9,6 @@
       system = prev.stdenv.hostPlatform.system;
     in
     {
-      # awscli2 on stable 25.05 is 2.27.2, well behind upstream. Unstable tracks
-      # the current release.
-      awscli2 = inputs.nixpkgs-unstable.legacyPackages.${system}.awscli2;
-
       # gh CLI on stable has bugs.
       gh = inputs.nixpkgs-unstable.legacyPackages.${system}.gh;
 
