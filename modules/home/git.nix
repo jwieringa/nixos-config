@@ -10,6 +10,13 @@
       hist = "log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(r) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative";
       root = "rev-parse --show-toplevel";
     };
+    delta = {
+      enable = true;
+      options = {
+        navigate = true; # n/N jump between files in the pager
+        line-numbers = true;
+      };
+    };
     ignores = [
       "vendor/bundle"
       ".envrc"
